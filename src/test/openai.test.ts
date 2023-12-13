@@ -10,7 +10,6 @@ describe("Assistant API", () => {
 			model: "gpt-3.5-turbo",
 		});
 
-		console.log("result", completion);
 		expect(completion.choices[0]).toBeTruthy();
 	});
 });
