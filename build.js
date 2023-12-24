@@ -1,7 +1,6 @@
 const { exec } = require("child_process");
 const fs = require("fs");
 const { JSDOM } = require("jsdom");
-const crypto = require("crypto");
 
 function runCommand(command) {
 	return new Promise((resolve, reject) => {
@@ -43,16 +42,6 @@ async function insertNonceToScripts(file) {
 	const head = document.querySelector("head");
 	if (!head) throw new Error("head tag not included");
 
-	// const meta = dom.createElement("meta");
-
-	// const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-	// meta.setAttribute("http-equiv", "Content-Security-Policy");
-	// meta.setAttribute(
-	// 	"content",
-	// 	`default-src 'self'; script-src 'self' 'nonce-${nonce}';`,
-	// );
-	// head.appendChild(meta);
-
 	const scripts = Array.from(document.getElementsByTagName("script"));
 	const scriptsWithoutSrc = scripts.filter(
 		(script) => !script.getAttribute("src"),
@@ -68,9 +57,6 @@ async function insertNonceToScripts(file) {
 	const scriptFile = file.replace(".html", ".js");
 	fs.writeFileSync(scriptFile, code);
 
-	// Array.from(scripts).forEach((script) => {
-	// 	script.setAttribute("nonce", nonce);
-	// });
 	const newScriptEl = document.createElement("script");
 	const jsFileSrc = scriptFile.replace("extension", ".");
 
