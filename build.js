@@ -38,9 +38,6 @@ async function extractInlineScripts(file) {
 	const html = fs.readFileSync(file);
 	const [dom, document] = parseJSDOM(html);
 
-	const head = document.querySelector("head");
-	if (!head) throw new Error("head tag not included");
-
 	const scripts = Array.from(document.getElementsByTagName("script"));
 	const scriptsWithoutSrc = scripts.filter(
 		(script) => !script.getAttribute("src"),
