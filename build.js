@@ -21,21 +21,20 @@ function runCommand(command) {
 
 async function runCommands() {
 	await runCommand("yarn next build");
+	// manifest.json, scripts 복사 및 컴파일
 	await runCommand(
 		"cp manifest.json extension/manifest.json && yarn tsc src/scripts/*.ts --outDir extension/scripts",
 	);
+	// rename: _next -> next
 	await runCommand("mv extension/_next extension/next");
+	// import:  _next -> next
 	await runCommand("sed -i '' -e 's/\\/_next/\\.\\/next/g' extension/**.html");
-	await runCommand(
-		"cp manifest.json extension/manifest.json && yarn tsc src/scripts/*.ts --outDir extension/scripts",
-	);
 
 	const htmlFiles = ["extension/popup.html", "extension/side-panel.html"];
-
-	htmlFiles.forEach((file) => insertNonceToScripts(file));
+	htmlFiles.forEach((file) => extractInlineScripts(file));
 }
 
-async function insertNonceToScripts(file) {
+async function extractInlineScripts(file) {
 	const html = fs.readFileSync(file);
 	const [dom, document] = parseJSDOM(html);
 
