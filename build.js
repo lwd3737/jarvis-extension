@@ -1,0 +1,88 @@
+const { exec } = require("child_process");
+const fs = require("fs");
+const { JSDOM } = require("jsdom");
+const crypto = require("crypto");
+
+function runCommand(command) {
+	return new Promise((resolve, reject) => {
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				console.error(`exec error: ${error}`);
+				reject(error);
+				return;
+			}
+			console.info(`${command}`);
+
+			if (stderr) console.error(`${stderr}`);
+
+			resolve();
+		});
+	});
+}
+
+async function runCommands() {
+	await runCommand("yarn next build");
+	await runCommand(
+		"cp manifest.json extension/manifest.json && yarn tsc src/scripts/*.ts --outDir extension/scripts",
+	);
+	await runCommand("mv extension/_next extension/next");
+	await runCommand("sed -i '' -e 's/\\/_next/\\.\\/next/g' extension/**.html");
+	await runCommand(
+		"cp manifest.json extension/manifest.json && yarn tsc src/scripts/*.ts --outDir extension/scripts",
+	);
+
+	const htmlFiles = ["extension/popup.html", "extension/side-panel.html"];
+
+	htmlFiles.forEach((file) => insertNonceToScripts(file));
+}
+
+async function insertNonceToScripts(file) {
+	const html = fs.readFileSync(file);
+	const [dom, document] = parseJSDOM(html);
+
+	const head = document.querySelector("head");
+	if (!head) throw new Error("head tag not included");
+
+	// const meta = dom.createElement("meta");
+
+	// const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+	// meta.setAttribute("http-equiv", "Content-Security-Policy");
+	// meta.setAttribute(
+	// 	"content",
+	// 	`default-src 'self'; script-src 'self' 'nonce-${nonce}';`,
+	// );
+	// head.appendChild(meta);
+
+	const scripts = Array.from(document.getElementsByTagName("script"));
+	const scriptsWithoutSrc = scripts.filter(
+		(script) => !script.getAttribute("src"),
+	);
+	const code = scriptsWithoutSrc.reduce(
+		(code, script) => (code += script.textContent + ";"),
+		"",
+	);
+	scriptsWithoutSrc.forEach((script) => {
+		script.remove();
+	});
+
+	const scriptFile = file.replace(".html", ".js");
+	fs.writeFileSync(scriptFile, code);
+
+	// Array.from(scripts).forEach((script) => {
+	// 	script.setAttribute("nonce", nonce);
+	// });
+	const newScriptEl = document.createElement("script");
+	const jsFileSrc = scriptFile.replace("extension", ".");
+
+	newScriptEl.setAttribute("src", jsFileSrc);
+	document.body.appendChild(newScriptEl);
+
+	fs.writeFileSync(file, dom.serialize());
+}
+
+function parseJSDOM(html) {
+	const jsdom = new JSDOM(html);
+	return [jsdom, jsdom.window.document];
+}
+
+runCommands().catch(console.error);
