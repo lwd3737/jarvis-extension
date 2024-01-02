@@ -3,7 +3,7 @@ export const CHANNELS = {
 } as const;
 
 export type Message = {
-	type: WorkerActions;
+	type: string;
 	payload: any;
 };
 
@@ -12,11 +12,4 @@ export type ContentActions =
 
 export const CONTENT_ACTIONS = {
 	openSidePanel: "openSidePanel",
-} as const;
-
-export type WorkerActions =
-	(typeof WORKER_ACTIONS)[keyof typeof WORKER_ACTIONS];
-
-export const WORKER_ACTIONS = {
-	sidePanelChanged: "sidePanelChanged",
 } as const;
