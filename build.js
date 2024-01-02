@@ -23,7 +23,10 @@ async function runCommands() {
 	await runCommand("yarn next build");
 	// manifest.json, scripts 복사 및 컴파일
 	await runCommand(
-		"cp manifest.json extension/manifest.json && yarn tsc src/scripts/*.ts --outDir extension/scripts",
+		"cp manifest.json extension/manifest.json && yarn tsc -p tsconfig.extension.json",
+	);
+	await runCommand(
+		"mkdir extension/styles && cp src/styles/*.css extension/styles/",
 	);
 	// rename: _next -> next
 	await runCommand("mv extension/_next extension/next");

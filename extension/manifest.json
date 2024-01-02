@@ -14,17 +14,28 @@
 	},
 	"content_scripts": [
 		{
-			"js": ["./scripts/content.js"],
+			"js": ["./scripts/content-scripts/index.js"],
+			"css": ["./styles/content.css"],
 			"matches": ["*://*/*"]
 		}
 	],
 	"background": {
-		"service_worker": "./scripts/background.js",
+		"service_worker": "./scripts/service-worker/index.js",
 		"type": "module"
 	},
 	"side_panel": {
 		"default_path": "side-panel.html"
 	},
+	"web_accessible_resources": [
+		{
+			"resources": ["images/*"],
+			"matches": ["*://*/*"]
+		},
+		{
+			"resources": ["scripts/*"],
+			"matches": ["*://*/*"]
+		}
+	],
 	"permissions": ["sidePanel"],
 	"host_permissions": ["*://*/*"]
 }
