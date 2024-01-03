@@ -33,7 +33,7 @@ async function runCommands() {
 	// import:  _next -> next
 	await runCommand("sed -i '' -e 's/\\/_next/\\.\\/next/g' extension/**.html");
 
-	const htmlFiles = ["extension/popup.html", "extension/side-panel.html"];
+	const htmlFiles = ["extension/popup.html", "extension/chatbot.html"];
 	htmlFiles.forEach((file) => extractInlineScripts(file));
 }
 

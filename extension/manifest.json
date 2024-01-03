@@ -24,7 +24,7 @@
 		"type": "module"
 	},
 	"side_panel": {
-		"default_path": "side-panel.html"
+		"default_path": "chatbot.html"
 	},
 	"web_accessible_resources": [
 		{
