@@ -1,3 +1,9 @@
+import Chatbot from "./components/chatbot";
+
 export default function Home() {
-	return <div>app</div>;
+	return (
+		<div>
+			<Chatbot />
+		</div>
+	);
 }
