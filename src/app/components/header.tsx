@@ -1,11 +1,17 @@
 import Image from "next/image";
 import logoImg from "/public/images/logo.png";
 
-export default function Header() {
+type HeaderProps = {
+	height: string;
+};
+
+export default function Header(props: HeaderProps) {
 	return (
-		<header>
-			<h1 className="flex justify-center items-center py-3">
-				<Image src={logoImg} alt="logo" width={30} height={30} />
+		<header
+			className={`flex justify-center items-center h-[${props.height}] py-3`}
+		>
+			<h1>
+				<Image src={logoImg} alt="logo" width={35} height={35} />
 			</h1>
 		</header>
 	);

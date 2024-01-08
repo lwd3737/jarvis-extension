@@ -21,7 +21,8 @@
 		"paths": {
 			"@/*": ["./*"]
 		},
-		"types": ["vitest/globals", "chrome"]
+		"types": ["vitest/globals", "chrome"],
+		"forceConsistentCasingInFileNames": false
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]
