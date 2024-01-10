@@ -1,16 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import ChatHistoryBox from "./ChatHistoryBox";
 import MessageForm from "./MessageForm";
 
 export default function ChatWindow() {
-	const [messaageFormHeight, setMessageFormHeight] = useState<number>(0);
-
-	const handleResizeMessageForm = () => {};
-
 	return (
-		<div>
+		<div className="flex flex-col h-full">
 			<ChatHistoryBox />
 			<MessageForm />
 		</div>
