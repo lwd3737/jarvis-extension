@@ -58,7 +58,7 @@ export default function MessageForm(props: MessageFormProps) {
 	const handleSubmit: FormEventHandler = (e) => {
 		e.preventDefault();
 
-		const el = e.target as HTMLTextAreaElement;
+		const el = e.currentTarget as HTMLTextAreaElement;
 		const message = el.value;
 
 		props.onSendMessage(message);
@@ -82,6 +82,7 @@ export default function MessageForm(props: MessageFormProps) {
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
 					ref={textareaRef}
+					name="message"
 					rows={1}
 					wrap="hard"
 					onKeyDown={handleKeyDown}
@@ -116,8 +117,4 @@ const MAX_HEIGHT = 150;
 
 const ERRORS = {
 	textareaElementNotExist: "textarea element not exist",
-};
-
-const colorBasedOnActivated = (activated: boolean) => {
-	return activated ? "[#4058FF]" : "[gray]";
 };
