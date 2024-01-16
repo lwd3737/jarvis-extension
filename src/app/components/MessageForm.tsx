@@ -88,16 +88,22 @@ export default function MessageForm(props: MessageFormProps) {
 				></textarea>
 				<div className="flex justify-end">
 					<button
-						className={`p-1 border-2 border-${colorBasedOnActivated(
-							activated,
-						)} border-solid rounded-md`}
+						className={`p-1  rounded-md ${
+							activated
+								? "border-2 border-gray-600 border-solid"
+								: "border-2 border-gray-300 border-solid"
+						}`}
 						type="submit"
 						disabled={!activated}
 					>
 						<ArrowUpIcon
-							className={`w-[13px] h-[13px] fill-${colorBasedOnActivated(
-								activated,
-							)}`}
+							width={13}
+							height={13}
+							fill={
+								activated
+									? "rgb(75 85 99 / var(--tw-border-opacity))"
+									: "rgb(209 213 219 / var(--tw-border-opacity))"
+							}
 						/>
 					</button>
 				</div>
