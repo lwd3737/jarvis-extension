@@ -46,7 +46,6 @@ export default function MessageForm(props: MessageFormProps) {
 
 		const toggleSubmitActivated = () => {
 			const textLength = el.value.length;
-			console.log(textLength);
 
 			if (textLength > 0) setActivated(true);
 			else setActivated(false);
@@ -63,6 +62,8 @@ export default function MessageForm(props: MessageFormProps) {
 		const message = el.value;
 
 		props.onSendMessage(message);
+		el.value = "";
+		setActivated(false);
 	};
 
 	const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
@@ -82,6 +83,7 @@ export default function MessageForm(props: MessageFormProps) {
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
 					ref={textareaRef}
 					rows={1}
+					wrap="hard"
 					onKeyDown={handleKeyDown}
 				></textarea>
 				<div className="flex justify-end">
