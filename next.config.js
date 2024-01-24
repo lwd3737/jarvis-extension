@@ -5,6 +5,9 @@ const nextConfig = {
 	images: {
 		unoptimized: true,
 	},
+	experimental: {
+		instrumentationHook: true,
+	},
 };
 
 if (process.env.NODE_ENV === "production") {
