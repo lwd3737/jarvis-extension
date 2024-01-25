@@ -2,8 +2,8 @@ import AssistantService from "./assistant.service";
 import ConfigService from "./config.service";
 import DIContainer from "./di-container";
 
-type Config = { apiKey: string; gptModel: string };
-export type MyConfigService = ConfigService<Config>;
+type MyConfig = { apiKey: string; gptModel: string };
+export type MyConfigService = ConfigService<MyConfig>;
 
 export let container: DIContainer;
 
@@ -14,7 +14,7 @@ function bind() {
 
 	container = new DIContainer();
 
-	const configService = new ConfigService<Config>([
+	const configService = ConfigService.builder<MyConfig>([
 		"OPENAI_API_KEY",
 		"GPT_MODEL",
 	])
@@ -25,14 +25,14 @@ function bind() {
 		.build();
 
 	container.bind(ConfigService);
-	container.toFactory(
-		{ useClass: AssistantService, dependencies: [configService] },
-		(serviceClass, dependencies) => {
-			const Service = serviceClass as typeof AssistantService;
-			const configService = dependencies?.[0] as MyConfigService;
+	// container.toFactory(
+	// 	{ useClass: AssistantService, dependencies: [configService] },
+	// 	(serviceClass, dependencies) => {
+	// 		const Service = serviceClass as typeof AssistantService;
+	// 		const configService = dependencies?.[0] as MyConfigService;
 
-			return Service.create(configService);
-		},
-	);
+	// 		return Service.create(configService);
+	// 	},
+	// );
 }
 bind();

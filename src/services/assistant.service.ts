@@ -1,7 +1,5 @@
 import OpenAI from "openai";
-import ConfigService from "./config.service";
 import { MyConfigService } from ".";
-import { config } from "process";
 
 export type Assistant = OpenAI.Beta.Assistants.Assistant;
 export type Thread = OpenAI.Beta.Threads.Thread;
