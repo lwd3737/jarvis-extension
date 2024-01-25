@@ -1,24 +1,38 @@
-import { IService, Service, ServiceMetadata, Services } from "./service";
+import { IService, ServiceDefinition, Services } from "./service";
 
 export default class DIContainer {
-	private new__services: Services;
+	private services: Services;
 
 	constructor() {
-		this.new__services = new Map<IService, ServiceMetadata>();
+		this.services = new Map<ServiceDefinition, IService>();
 	}
 
-	public bind(service: IService, dependencies?: any[]) {
+	public bind(service: ServiceDefinition, dependencies?: any[]): void {
 		const instance = dependencies
 			? new service(...dependencies)
 			: new service();
-		this.new__services.set(service, instance);
+		this.services.set(service, instance);
 	}
 
-	public get<T extends Service>(service: IService): T {
-		const metadata = this.new__services.get(service);
-		if (!metadata)
+	public toFactory(
+		service: {
+			useClass: ServiceDefinition;
+			dependencies?: any[];
+		},
+		factory: (
+			serviceClass: ServiceDefinition,
+			dependencies?: any[],
+		) => IService,
+	): void {
+		const instance = factory(service.useClass, service.dependencies);
+		this.services.set(service.useClass, instance);
+	}
+
+	public get<T extends IService>(service: ServiceDefinition): T {
+		const instance = this.services.get(service);
+		if (!instance)
 			throw new Error(`[${DIContainer.name}] ${service.name} is not bound`);
 
-		return metadata.instance as T;
+		return instance as T;
 	}
 }

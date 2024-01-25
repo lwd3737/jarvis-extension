@@ -1,8 +1,11 @@
 import OpenAI from "openai";
+import ConfigService from "./config.service";
+import { MyConfigService } from ".";
+import { config } from "process";
 
 export type Assistant = OpenAI.Beta.Assistants.Assistant;
 export type Thread = OpenAI.Beta.Threads.Thread;
-type AssistantCreateProps = {
+type AssistantOptions = {
 	name?: string;
 	instructions?: string;
 };
@@ -17,31 +20,18 @@ export default class AssistantService {
 	private thread?: OpenAI.Beta.Threads.Thread;
 
 	public static async create(
-		props?: AssistantCreateProps,
+		configService: MyConfigService,
+		options?: AssistantOptions,
 	): Promise<AssistantService> {
-		const { apiKey, model } = this.validateEnvVars();
+		const { apiKey, gptModel } = configService.get();
 
 		const openai = new OpenAI({ apiKey });
 		const assistant = await openai.beta.assistants.create({
-			model,
-			...props,
+			model: gptModel,
+			...options,
 		});
 
 		return new AssistantService({ openai, assistant });
-	}
-
-	private static validateEnvVars() {
-		const { OPENAI_API_KEY, GPT_MODEL } = process.env;
-		const envVars = { OPENAI_API_KEY, GPT_MODEL };
-		Object.entries(envVars).forEach(([name, val]) => {
-			if (!val)
-				throw new Error(`[${AssistantService.name}] ${name} is not set`);
-		});
-
-		return {
-			apiKey: OPENAI_API_KEY!,
-			model: GPT_MODEL!,
-		};
 	}
 
 	constructor(props: AssistantNewProps) {

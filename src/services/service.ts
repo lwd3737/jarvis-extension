@@ -1,13 +1,7 @@
-export type Services = Map<IService, ServiceMetadata>;
+export type Services = Map<ServiceDefinition, IService>;
 
-export interface IService {
-	new (): any;
+export interface ServiceDefinition {
 	new (...args: any[]): any;
 }
 
-export type ServiceMetadata = {
-	instance: Service;
-	dependencies: any[];
-};
-
-export type Service = InstanceType<IService>;
+export interface IService {}
