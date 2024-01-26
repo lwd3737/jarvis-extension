@@ -12,6 +12,8 @@ export default class DIContainer {
 			? new service(...dependencies)
 			: new service();
 		this.services.set(service, instance);
+
+		this.logBound(service);
 	}
 
 	public toFactory(
@@ -23,6 +25,14 @@ export default class DIContainer {
 	): void {
 		const instance = factory(service.useClass, service.dependencies);
 		this.services.set(service.useClass, instance);
+
+		this.logBound(service.useClass);
+	}
+
+	private logBound(service: ServiceClass) {
+		console.info(
+			`[${DIContainer.name}] ${service.name} services is bound successfully`,
+		);
 	}
 
 	public get<T extends IService>(service: ServiceClass): T {

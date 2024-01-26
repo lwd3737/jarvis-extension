@@ -1,3 +1,4 @@
+import ChatCompletionService from "./chat-completion.service";
 import ConfigService from "./config.service";
 import DIContainer from "./di-container";
 
@@ -9,7 +10,7 @@ export let container: DIContainer;
 function bind() {
 	if (container) return;
 
-	console.info("[DIContainer] Binding services");
+	console.info("[DIContainer]Binding services");
 
 	container = new DIContainer();
 
@@ -29,6 +30,10 @@ function bind() {
 				.build();
 		},
 	);
+
+	container.bind(ChatCompletionService, [container.get(ConfigService)]);
+
+	// container.bind(OpenAIService, [container.get(ConfigService)]);
 
 	// container.toFactory(
 	// 	{ useClass: AssistantService, dependencies: [configService] },
