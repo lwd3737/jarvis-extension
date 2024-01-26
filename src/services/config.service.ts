@@ -42,7 +42,6 @@ export default class ConfigService<T extends Config> implements IService {
 	}
 
 	constructor(config: T) {
-		console.log("config", config);
 		this.config = deepFreeze(config) as T;
 	}
 
