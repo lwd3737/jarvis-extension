@@ -1,6 +1,6 @@
-export type Services = Map<ServiceDefinition, IService>;
+export type Services = Map<ServiceClass, IService>;
 
-export interface ServiceDefinition {
+export interface ServiceClass {
 	new (...args: any[]): any;
 }
 

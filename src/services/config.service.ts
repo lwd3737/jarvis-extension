@@ -7,9 +7,9 @@ class ConfigServiceBuilder<T extends Config> {
 	private config: T;
 
 	constructor(envVarNames: string[]) {
-		const envVars = envVarNames.reduce((record, name) => {
-			this.validateEnvVar(name);
+		this.validateEnvVars(envVarNames);
 
+		const envVars = envVarNames.reduce((record, name) => {
 			record[name] = process.env[name]!;
 			return record;
 		}, {} as Record<string, string>);
@@ -17,9 +17,11 @@ class ConfigServiceBuilder<T extends Config> {
 		this.config = envVars as T;
 	}
 
-	private validateEnvVar(name: string) {
-		if (!(name in process.env))
-			throw new Error(`[${ConfigService.name}] ${name} is not set`);
+	private validateEnvVars(names: string[]) {
+		names.forEach((name) => {
+			if (!(name in process.env))
+				throw new Error(`[${ConfigService.name}] ${names} is not set`);
+		});
 	}
 
 	public build(): ConfigService<T> {
@@ -40,6 +42,7 @@ export default class ConfigService<T extends Config> implements IService {
 	}
 
 	constructor(config: T) {
+		console.log("config", config);
 		this.config = deepFreeze(config) as T;
 	}
 
