@@ -34,7 +34,7 @@ class ConfigServiceBuilder<T extends Config> {
 	}
 }
 
-export default class ConfigService<T extends Config> implements IService {
+export class ConfigService<T extends Config> implements IService {
 	private config: T;
 
 	public static builder<T extends Config = Config>(envVarNames: string[]) {

@@ -3,6 +3,8 @@
 import {
 	FormEventHandler,
 	KeyboardEventHandler,
+	memo,
+	useCallback,
 	useEffect,
 	useRef,
 	useState,
@@ -13,13 +15,15 @@ type MessageFormProps = {
 	onSendMessage: (message: string) => void;
 };
 
-export default function MessageForm(props: MessageFormProps) {
+export default memo(function MessageForm(props: MessageFormProps) {
+	const formRef = useRef<HTMLFormElement>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const submitButtonRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(function onAutoResize() {
 		const el = textareaRef.current;
 		if (!el) {
-			console.error(ERRORS.textareaElementNotExist);
+			console.error(EXCEPTIONS.textareaElementNotExist);
 			return;
 		}
 
@@ -37,16 +41,16 @@ export default function MessageForm(props: MessageFormProps) {
 	}, []);
 
 	const [activated, setActivated] = useState<boolean>(false);
-	useEffect(function toggleSubmitActivatedOnInput() {
+
+	useEffect(function toggleSubmitActivationOnInput() {
 		const el = textareaRef.current;
 		if (!el) {
-			console.error(ERRORS.textareaElementNotExist);
+			console.error(EXCEPTIONS.textareaElementNotExist);
 			return;
 		}
 
 		const toggleSubmitActivated = () => {
 			const textLength = el.value.length;
-
 			if (textLength > 0) setActivated(true);
 			else setActivated(false);
 		};
@@ -55,41 +59,65 @@ export default function MessageForm(props: MessageFormProps) {
 		return () => el.removeEventListener("input", toggleSubmitActivated);
 	}, []);
 
-	const handleSubmit: FormEventHandler = (e) => {
-		e.preventDefault();
-
-		const el = e.currentTarget as HTMLTextAreaElement;
-		const message = el.value;
-
-		props.onSendMessage(message);
-		el.value = "";
-		setActivated(false);
-	};
-
-	const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-		if (e.key === "Enter" && !e.shiftKey) {
+	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
+		(e) => {
 			e.preventDefault();
 
-			if (activated) {
-				handleSubmit(e);
+			const formEl = e.currentTarget;
+			const messageContent = new FormData(formEl).get("message-content");
+			if (!messageContent) return;
+
+			props.onSendMessage(messageContent as string);
+
+			const textareaEl = textareaRef.current!;
+
+			textareaEl.value = "";
+			setActivated(false);
+		},
+		[props],
+	);
+
+	const triggerSubmit = useCallback(() => {
+		if (!activated) return;
+
+		const formEl = formRef.current!;
+		const btnEl = submitButtonRef.current!;
+		formEl.requestSubmit(btnEl);
+	}, [activated]);
+
+	const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = useCallback(
+		(e) => {
+			e.stopPropagation();
+
+			if (e.code === "Enter" && !e.shiftKey) {
+				e.preventDefault();
+				e.repeat = false;
+
+				// 크롬 브라우저에서 한국어로 입력할 때 2번 호출되는 버그 발생. 비동기로 처리하면 해결됨
+				setTimeout(() => {
+					triggerSubmit();
+				}, 0);
 			}
-		}
-	};
+		},
+		[triggerSubmit],
+	);
 
 	return (
-		<form className="px-5 py-3" onSubmit={handleSubmit}>
+		<form ref={formRef} className="px-5 py-3" onSubmit={handleSubmit}>
 			<div className="px-[16px] py-[14px] bg-gray-100 rounded-3xl">
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
 					ref={textareaRef}
-					name="message"
+					name="message-content"
 					rows={1}
 					wrap="hard"
+					autoComplete="off"
 					onKeyDown={handleKeyDown}
 				></textarea>
 				<div className="flex justify-end">
 					<button
-						className={`p-1  rounded-md ${
+						ref={submitButtonRef}
+						className={`p-1 rounded-md ${
 							activated
 								? "border-2 border-gray-600 border-solid"
 								: "border-2 border-gray-300 border-solid"
@@ -111,10 +139,10 @@ export default function MessageForm(props: MessageFormProps) {
 			</div>
 		</form>
 	);
-}
+});
 
 const MAX_HEIGHT = 150;
 
-const ERRORS = {
+const EXCEPTIONS = {
 	textareaElementNotExist: "textarea element not exist",
 };

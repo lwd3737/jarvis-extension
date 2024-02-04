@@ -1,3 +1,5 @@
+import { bind } from "./services";
+
 export async function register() {
-	await import("./services/bind");
+	await bind();
 }

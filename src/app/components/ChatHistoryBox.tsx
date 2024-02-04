@@ -1,7 +1,7 @@
-import { Message } from "@/src/models/chat";
+import { CompletionContentPart, CompletionMessage } from "@/src/models/chat";
 
 type ChatHistoryBoxProps = {
-	history: Message[];
+	history: CompletionMessage[];
 };
 
 export default function ChatHistoryBox(props: ChatHistoryBoxProps) {
@@ -13,15 +13,26 @@ export default function ChatHistoryBox(props: ChatHistoryBoxProps) {
 					key={i}
 				>
 					<div className="leading-[1.2] text-[13px] font-bold">
-						{formatSender(message.sender)}
+						{formatRole(message.role)}
 					</div>
-					<div className="text-[15px]">{message.content}</div>
+					<div className="text-[15px]">{parseContent(message.content)}</div>
 				</div>
 			))}
 		</div>
 	);
 }
+const formatRole = (role: string) => {
+	return role[0].toUpperCase() + role.slice(1);
+};
 
-const formatSender = (sender: string) => {
-	return sender[0].toUpperCase() + sender.slice(1);
+const parseContent = (
+	content: string | Array<CompletionContentPart> | null,
+): string => {
+	if (Array.isArray(content)) {
+		const textContent = content
+			.filter((part) => part.type === "text")
+			.join("\n");
+		return textContent;
+	}
+	return content ?? "";
 };

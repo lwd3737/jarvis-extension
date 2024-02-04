@@ -1,24 +1,22 @@
 import OpenAI from "openai";
 import { MyConfigService } from ".";
-import { IService } from "./service";
+import { IService, getService } from "./service";
+import {
+	CompletionCreateResult,
+	CompletionMessage,
+	CompletionSystemMessage,
+	CompletionUserMessage,
+} from "../models/chat";
 
-type ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
-type ChatCompletionSystemMessageParam = OpenAI.ChatCompletionSystemMessageParam;
-type ChatCompletionUserMessageParam = OpenAI.ChatCompletionUserMessageParam;
-type CompletionCreateResult = {
-	to: ChatCompletionUserMessageParam;
-	from: ChatCompletionMessageParam;
-};
-
-export default class ChatCompletionService implements IService {
+export class ChatCompletionService implements IService {
 	private openai: OpenAI;
 	private model: string;
-	private messages: ChatCompletionMessageParam[];
-	private systemMessage: ChatCompletionSystemMessageParam;
+	private messages: CompletionMessage[];
+	private systemMessage: CompletionSystemMessage;
 
 	constructor(
 		configService: MyConfigService,
-		systemMessage?: ChatCompletionSystemMessageParam,
+		systemMessage?: CompletionSystemMessage,
 	) {
 		this.openai = new OpenAI({ apiKey: configService.get().apiKey });
 		this.model = configService.get().gptModel;
@@ -30,23 +28,36 @@ export default class ChatCompletionService implements IService {
 	}
 
 	public async createCompletion(
-		message: ChatCompletionUserMessageParam,
+		messageContent: string,
 	): Promise<CompletionCreateResult> {
+		const userMessage: CompletionUserMessage = {
+			role: "user",
+			content: messageContent,
+		};
 		const completion = await this.openai.chat.completions.create({
-			messages: [this.systemMessage, ...this.messages],
+			messages: [this.systemMessage, ...this.messages, userMessage],
 			model: this.model,
 		});
 
-		const responseMessage = completion.choices[0].message;
-		this.messages.push(message, responseMessage);
+		const assistantMessage = completion.choices[0].message;
+
+		this.messages.push(userMessage, assistantMessage);
 
 		return {
-			to: message,
-			from: responseMessage,
+			to: userMessage,
+			from: assistantMessage,
 		};
 	}
 
 	public clearMessages(): void {
 		this.messages = [];
 	}
+
+	public displayRole(role: string) {
+		return role[0].toUpperCase() + role.slice(1);
+	}
 }
+
+export const getChatCompletionService = () => {
+	return getService<ChatCompletionService>(ChatCompletionService);
+};
