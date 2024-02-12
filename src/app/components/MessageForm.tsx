@@ -11,9 +11,12 @@ import {
 } from "react";
 import ArrowUpIcon from "./ArrowUpIcon";
 import { useChat } from "ai/react";
+import StopIcon from "./StopIcon";
 
 type MessageFormProps = {
-	appendMessage: UseChatHelper["append"];
+	isLoading: boolean;
+	onAppendMessage: UseChatHelper["append"];
+	onStopMessage: UseChatHelper["stop"];
 };
 type UseChatHelper = ReturnType<typeof useChat>;
 
@@ -72,9 +75,9 @@ export default memo(function MessageForm(props: MessageFormProps) {
 			const text = formData.get("text-prompt");
 			if (!text) return;
 
-			props.appendMessage({
+			props.onAppendMessage({
 				content: text.toString(),
-				role: "assistant",
+				role: "user",
 			});
 
 			const textareaEl = textareaRef.current!;
@@ -124,26 +127,32 @@ export default memo(function MessageForm(props: MessageFormProps) {
 					onKeyDown={handleKeyDown}
 				></textarea>
 				<div className="flex justify-end">
-					<button
-						ref={submitButtonRef}
-						className={`p-1 rounded-md ${
-							activated
-								? "border-2 border-gray-600 border-solid"
-								: "border-2 border-gray-300 border-solid"
-						}`}
-						type="submit"
-						disabled={!activated}
-					>
-						<ArrowUpIcon
-							width={13}
-							height={13}
-							fill={
+					{props.isLoading ? (
+						<button onClick={props.onStopMessage}>
+							<StopIcon width={23} height={23} />
+						</button>
+					) : (
+						<button
+							ref={submitButtonRef}
+							className={`p-1 rounded-md ${
 								activated
-									? "rgb(75 85 99 / var(--tw-border-opacity))"
-									: "rgb(209 213 219 / var(--tw-border-opacity))"
-							}
-						/>
-					</button>
+									? "border-2 border-gray-600 border-solid"
+									: "border-2 border-gray-300 border-solid"
+							}`}
+							type="submit"
+							disabled={!activated}
+						>
+							<ArrowUpIcon
+								width={13}
+								height={13}
+								fill={
+									activated
+										? "rgb(75 85 99 / var(--tw-border-opacity))"
+										: "rgb(209 213 219 / var(--tw-border-opacity))"
+								}
+							/>
+						</button>
+					)}
 				</div>
 			</div>
 		</form>

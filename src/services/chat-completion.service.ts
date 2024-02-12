@@ -30,14 +30,6 @@ export class ChatCompletionService implements IService {
 		this.messages = [];
 	}
 
-	getOpenai() {
-		return this.openai;
-	}
-
-	getModel() {
-		return this.model;
-	}
-
 	public async createCompletion(
 		messages: CompletionMessage[],
 	): Promise<Stream<OpenAI.Chat.Completions.ChatCompletionChunk>> {
