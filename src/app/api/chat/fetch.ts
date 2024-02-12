@@ -1,8 +1,9 @@
-import { CompletionCreateResult } from "@/src/models/chat";
-import { baseFetch } from "../../shared";
+import { CompletionCreateResult, CompletionMessage } from "@/src/models/chat";
+import { baseFetch } from "../shared";
+import { Message } from "ai";
 
 export interface CompletionCreateRequestBody {
-	content: string;
+	messages: CompletionMessage[];
 }
 
 export default async function createChatCompletion(

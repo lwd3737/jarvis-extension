@@ -1,10 +1,13 @@
 import { CompletionContentPart, CompletionMessage } from "@/src/models/chat";
+import { Message } from "ai";
+import { memo } from "react";
 
 type ChatHistoryBoxProps = {
-	history: CompletionMessage[];
+	// history: CompletionMessage[];
+	history: Message[];
 };
 
-export default function ChatHistoryBox(props: ChatHistoryBoxProps) {
+export default memo(function ChatHistoryBox(props: ChatHistoryBoxProps) {
 	return (
 		<div className="flex-grow border border-gray-100 border-solid">
 			{props.history.map((message, i) => (
@@ -20,7 +23,8 @@ export default function ChatHistoryBox(props: ChatHistoryBoxProps) {
 			))}
 		</div>
 	);
-}
+});
+
 const formatRole = (role: string) => {
 	return role[0].toUpperCase() + role.slice(1);
 };

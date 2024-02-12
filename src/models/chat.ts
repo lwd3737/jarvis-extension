@@ -1,13 +1,11 @@
+import { Message, StreamingTextResponse } from "ai";
 import OpenAI from "openai";
 
 export interface ChatHistory {
-	messages: CompletionMessage[];
+	messages: Message[];
 }
 
-export type CompletionMessage =
-	| CompletionSystemMessage
-	| CompletionUserMessage
-	| CompletionAssistantMessage;
+export type CompletionMessage = OpenAI.ChatCompletionMessageParam;
 
 export type CompletionSystemMessage = OpenAI.ChatCompletionSystemMessageParam;
 
@@ -18,7 +16,10 @@ export type CompletionAssistantMessage =
 
 export type CompletionCreateResult = {
 	to: CompletionUserMessage;
-	from: CompletionMessage;
+	from: {
+		role: "assistant";
+		content: StreamingTextResponse;
+	};
 };
 
 export type CompletionContentPart = OpenAI.ChatCompletionContentPart;

@@ -7,46 +7,45 @@ import {
 	CompletionSystemMessage,
 	CompletionUserMessage,
 } from "../models/chat";
+import { Message, OpenAIStream, StreamingTextResponse } from "ai";
+import { Stream } from "openai/streaming.mjs";
 
 export class ChatCompletionService implements IService {
 	private openai: OpenAI;
 	private model: string;
 	private messages: CompletionMessage[];
-	private systemMessage: CompletionSystemMessage;
+	// private systemMessage: CompletionSystemMessage;
 
 	constructor(
 		configService: MyConfigService,
 		systemMessage?: CompletionSystemMessage,
 	) {
+		console.log("model", configService.get().gptModel);
 		this.openai = new OpenAI({ apiKey: configService.get().apiKey });
 		this.model = configService.get().gptModel;
-		this.systemMessage = systemMessage ?? {
-			role: "system",
-			content: "너는 한국어로 도움을 주는 조력자야",
-		};
+		// this.systemMessage = systemMessage ?? {
+		// 	role: "system",
+		// 	content: "너는 한국어로 도움을 주는 조력자야",
+		// };
 		this.messages = [];
 	}
 
+	getOpenai() {
+		return this.openai;
+	}
+
+	getModel() {
+		return this.model;
+	}
+
 	public async createCompletion(
-		messageContent: string,
-	): Promise<CompletionCreateResult> {
-		const userMessage: CompletionUserMessage = {
-			role: "user",
-			content: messageContent,
-		};
-		const completion = await this.openai.chat.completions.create({
-			messages: [this.systemMessage, ...this.messages, userMessage],
+		messages: CompletionMessage[],
+	): Promise<Stream<OpenAI.Chat.Completions.ChatCompletionChunk>> {
+		return this.openai.chat.completions.create({
+			messages: [...this.messages, ...messages],
 			model: this.model,
+			stream: true,
 		});
-
-		const assistantMessage = completion.choices[0].message;
-
-		this.messages.push(userMessage, assistantMessage);
-
-		return {
-			to: userMessage,
-			from: assistantMessage,
-		};
 	}
 
 	public clearMessages(): void {

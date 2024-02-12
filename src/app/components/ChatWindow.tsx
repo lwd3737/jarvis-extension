@@ -1,23 +1,22 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import ChatHistoryBox from "./ChatHistoryBox";
 import MessageForm from "./MessageForm";
-import { CompletionMessage } from "@/src/models/chat";
-import createChatCompletion from "../api/chat/completion/fetch";
+import { useChat } from "ai/react";
 
 export default function ChatWindow() {
-	const [messages, setMessages] = useState<CompletionMessage[]>([]);
+	const chat = useChat();
 
-	const handleCreateCompletion = useCallback(async (content: string) => {
-		const created = await createChatCompletion({ content });
-		setMessages((prev) => [...prev, created.to, created.from]);
-	}, []);
+	console.log("chat", chat.messages);
 
 	return (
 		<div className="flex flex-col h-full">
-			<ChatHistoryBox history={messages} />
-			<MessageForm onSendMessage={handleCreateCompletion} />
+			<ChatHistoryBox history={chat.messages} />
+			<MessageForm
+				value={chat.input}
+				onInputChange={chat.handleInputChange}
+				onSubmit={chat.handleSubmit}
+			/>
 		</div>
 	);
 }

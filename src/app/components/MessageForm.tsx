@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	ChangeEventHandler,
 	FormEventHandler,
 	KeyboardEventHandler,
 	memo,
@@ -10,10 +11,15 @@ import {
 	useState,
 } from "react";
 import ArrowUpIcon from "./ArrowUpIcon";
+import { useChat } from "ai/react";
 
 type MessageFormProps = {
-	onSendMessage: (message: string) => void;
+	value: UseChatHelper["input"];
+	onInputChange: ChangeEventHandler<HTMLTextAreaElement>;
+	onSubmit: UseChatHelper["handleSubmit"];
+	// onSendMessage: (message: string) => void;
 };
+type UseChatHelper = ReturnType<typeof useChat>;
 
 export default memo(function MessageForm(props: MessageFormProps) {
 	const formRef = useRef<HTMLFormElement>(null);
@@ -63,15 +69,11 @@ export default memo(function MessageForm(props: MessageFormProps) {
 		(e) => {
 			e.preventDefault();
 
-			const formEl = e.currentTarget;
-			const messageContent = new FormData(formEl).get("message-content");
-			if (!messageContent) return;
-
-			props.onSendMessage(messageContent as string);
+			props.onSubmit(e);
 
 			const textareaEl = textareaRef.current!;
-
 			textareaEl.value = "";
+
 			setActivated(false);
 		},
 		[props],
@@ -82,6 +84,7 @@ export default memo(function MessageForm(props: MessageFormProps) {
 
 		const formEl = formRef.current!;
 		const btnEl = submitButtonRef.current!;
+
 		formEl.requestSubmit(btnEl);
 	}, [activated]);
 
@@ -108,11 +111,12 @@ export default memo(function MessageForm(props: MessageFormProps) {
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
 					ref={textareaRef}
-					name="message-content"
 					rows={1}
 					wrap="hard"
 					autoComplete="off"
 					onKeyDown={handleKeyDown}
+					onChange={props.onInputChange}
+					value={props.value}
 				></textarea>
 				<div className="flex justify-end">
 					<button
