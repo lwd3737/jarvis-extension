@@ -115,8 +115,8 @@ export default memo(function MessageForm(props: MessageFormProps) {
 	);
 
 	return (
-		<form ref={formRef} className="px-5 py-3" onSubmit={handleSubmit}>
-			<div className="px-[16px] py-[14px] bg-gray-100 rounded-3xl">
+		<form ref={formRef} className="h-full px-5 py-3" onSubmit={handleSubmit}>
+			<div className="h-full px-[16px] py-[14px] bg-gray-100 rounded-3xl">
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
 					ref={textareaRef}

@@ -1,14 +1,35 @@
 import { CompletionContentPart } from "@/src/models/chat";
 import { Message } from "ai";
-import { memo } from "react";
+import { memo, useEffect, useRef } from "react";
 
 type ChatHistoryBoxProps = {
 	history: Message[];
 };
 
 export default memo(function ChatHistoryBox(props: ChatHistoryBoxProps) {
+	const scrollableRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const scrollableEl = scrollableRef.current;
+		if (!scrollableEl) return;
+
+		const isScrollPositionedAtBottom =
+			Math.abs(
+				scrollableEl.scrollHeight -
+					scrollableEl.scrollTop -
+					scrollableEl.clientHeight,
+			) < 50;
+
+		if (!isScrollPositionedAtBottom) return;
+
+		scrollableEl.scrollTop = scrollableEl.scrollHeight;
+	}, [props.history]);
+
 	return (
-		<div className="flex-grow border border-gray-100 border-solid">
+		<div
+			ref={scrollableRef}
+			className="flex-grow h-full overflow-y-auto border border-gray-100 border-solid"
+		>
 			{props.history.map((message, i) => (
 				<div
 					className="flex items-start p-5 whitespace-pre-wrap border-b border-gray-100 border-solid gap-x-3"
