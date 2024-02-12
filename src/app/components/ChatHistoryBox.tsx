@@ -9,21 +9,24 @@ type ChatHistoryBoxProps = {
 export default memo(function ChatHistoryBox(props: ChatHistoryBoxProps) {
 	const scrollableRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		const scrollableEl = scrollableRef.current;
-		if (!scrollableEl) return;
+	useEffect(
+		function scrollToBottomOnScrollPositionedAtBottom() {
+			const scrollableEl = scrollableRef.current;
+			if (!scrollableEl) return;
 
-		const isScrollPositionedAtBottom =
-			Math.abs(
-				scrollableEl.scrollHeight -
-					scrollableEl.scrollTop -
-					scrollableEl.clientHeight,
-			) < 50;
+			const isScrollPositionedAtBottom =
+				Math.abs(
+					scrollableEl.scrollHeight -
+						scrollableEl.scrollTop -
+						scrollableEl.clientHeight,
+				) < 50;
 
-		if (!isScrollPositionedAtBottom) return;
+			if (!isScrollPositionedAtBottom) return;
 
-		scrollableEl.scrollTop = scrollableEl.scrollHeight;
-	}, [props.history]);
+			scrollableEl.scrollTop = scrollableEl.scrollHeight;
+		},
+		[props.history],
+	);
 
 	return (
 		<div
