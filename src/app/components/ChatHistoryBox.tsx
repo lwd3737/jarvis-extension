@@ -1,9 +1,8 @@
-import { CompletionContentPart, CompletionMessage } from "@/src/models/chat";
+import { CompletionContentPart } from "@/src/models/chat";
 import { Message } from "ai";
 import { memo } from "react";
 
 type ChatHistoryBoxProps = {
-	// history: CompletionMessage[];
 	history: Message[];
 };
 

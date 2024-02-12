@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	ChangeEventHandler,
 	FormEventHandler,
 	KeyboardEventHandler,
 	memo,
@@ -14,10 +13,7 @@ import ArrowUpIcon from "./ArrowUpIcon";
 import { useChat } from "ai/react";
 
 type MessageFormProps = {
-	value: UseChatHelper["input"];
-	onInputChange: ChangeEventHandler<HTMLTextAreaElement>;
-	onSubmit: UseChatHelper["handleSubmit"];
-	// onSendMessage: (message: string) => void;
+	appendMessage: UseChatHelper["append"];
 };
 type UseChatHelper = ReturnType<typeof useChat>;
 
@@ -69,7 +65,17 @@ export default memo(function MessageForm(props: MessageFormProps) {
 		(e) => {
 			e.preventDefault();
 
-			props.onSubmit(e);
+			const formEl = formRef.current;
+			if (!formEl) return;
+
+			const formData = new FormData(formEl);
+			const text = formData.get("text-prompt");
+			if (!text) return;
+
+			props.appendMessage({
+				content: text.toString(),
+				role: "assistant",
+			});
 
 			const textareaEl = textareaRef.current!;
 			textareaEl.value = "";
@@ -111,12 +117,11 @@ export default memo(function MessageForm(props: MessageFormProps) {
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
 					ref={textareaRef}
+					name="text-prompt"
 					rows={1}
 					wrap="hard"
 					autoComplete="off"
 					onKeyDown={handleKeyDown}
-					onChange={props.onInputChange}
-					value={props.value}
 				></textarea>
 				<div className="flex justify-end">
 					<button
