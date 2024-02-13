@@ -19,8 +19,7 @@ export default memo(function ChatHistoryBox(props: ChatHistoryBoxProps) {
 					scrollableEl.scrollHeight -
 						scrollableEl.scrollTop -
 						scrollableEl.clientHeight,
-				) < 50;
-
+				) < 100;
 			if (!isScrollPositionedAtBottom) return;
 
 			scrollableEl.scrollTop = scrollableEl.scrollHeight;
