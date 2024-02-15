@@ -12,8 +12,8 @@ export default function ChatWindow() {
 			<ChatHistoryBox history={chat.messages} />
 			<MessageForm
 				isLoading={chat.isLoading}
-				onAppendMessage={chat.append}
-				onStopMessage={chat.stop}
+				appendMessage={chat.append}
+				stopMessage={chat.stop}
 			/>
 		</div>
 	);

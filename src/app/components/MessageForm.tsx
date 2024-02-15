@@ -1,153 +1,59 @@
 "use client";
 
-import {
-	FormEventHandler,
-	KeyboardEventHandler,
-	memo,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { memo } from "react";
 import ArrowUpIcon from "./ArrowUpIcon";
 import { useChat } from "ai/react";
 import StopIcon from "./StopIcon";
+import useMessageForm, {
+	MessageAppendHelper,
+	MessageStopHelper,
+} from "../hooks/useMessageForm";
 
 type MessageFormProps = {
 	isLoading: boolean;
-	onAppendMessage: UseChatHelper["append"];
-	onStopMessage: UseChatHelper["stop"];
+	appendMessage: MessageAppendHelper;
+	stopMessage: MessageStopHelper;
 };
-type UseChatHelper = ReturnType<typeof useChat>;
 
 export default memo(function MessageForm(props: MessageFormProps) {
-	const formRef = useRef<HTMLFormElement>(null);
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
-	const submitButtonRef = useRef<HTMLButtonElement>(null);
-
-	useEffect(function onAutoResize() {
-		const textareaEl = textareaRef.current;
-		if (!textareaEl) {
-			console.error(EXCEPTIONS.textareaElementNotExist);
-			return;
-		}
-
-		const autoResize = () => {
-			if (textareaEl.scrollHeight >= MAX_HEIGHT) {
-				textareaEl.style.overflowY = "scroll";
-			} else {
-				textareaEl.style.height = "auto";
-				textareaEl.style.height = `${textareaEl.scrollHeight}px`;
-			}
-		};
-
-		textareaEl.addEventListener("input", autoResize);
-		return () => textareaEl.removeEventListener("input", autoResize);
-	}, []);
-
-	const [activated, setActivated] = useState<boolean>(false);
-
-	useEffect(function toggleSubmitActivationOnInput() {
-		const el = textareaRef.current;
-		if (!el) {
-			console.error(EXCEPTIONS.textareaElementNotExist);
-			return;
-		}
-
-		const toggleSubmitActivated = () => {
-			const textLength = el.value.length;
-			if (textLength > 0) setActivated(true);
-			else setActivated(false);
-		};
-
-		el.addEventListener("input", toggleSubmitActivated);
-		return () => el.removeEventListener("input", toggleSubmitActivated);
-	}, []);
-
-	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
-		(e) => {
-			e.preventDefault();
-
-			const formEl = formRef.current;
-			if (!formEl) return;
-
-			const formData = new FormData(formEl);
-			const text = formData.get("text-prompt");
-			if (!text) return;
-
-			props.onAppendMessage({
-				content: text.toString(),
-				role: "user",
-			});
-
-			const textareaEl = textareaRef.current!;
-			textareaEl.value = "";
-			textareaEl.dispatchEvent(new Event("input"));
-
-			setActivated(false);
-		},
-		[props],
-	);
-
-	const triggerSubmit = useCallback(() => {
-		if (!activated) return;
-
-		const formEl = formRef.current!;
-		const btnEl = submitButtonRef.current!;
-
-		formEl.requestSubmit(btnEl);
-	}, [activated]);
-
-	const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = useCallback(
-		(e) => {
-			e.stopPropagation();
-
-			if (e.code === "Enter" && !e.shiftKey) {
-				e.preventDefault();
-				e.repeat = false;
-
-				// 크롬 브라우저에서 한국어로 입력할 때 2번 호출되는 버그 발생. 비동기로 처리하면 해결됨
-				setTimeout(() => {
-					triggerSubmit();
-				}, 0);
-			}
-		},
-		[triggerSubmit],
-	);
+	const form = useMessageForm({
+		appendMessage: props.appendMessage,
+		stopMessage: props.stopMessage,
+	});
 
 	return (
-		<form ref={formRef} className="px-5 py-3" onSubmit={handleSubmit}>
+		<form ref={form.formRef} className="px-5 py-3" onSubmit={form.onSubmit}>
 			<div className="h-full px-[16px] py-[14px] bg-gray-100 rounded-3xl">
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
-					ref={textareaRef}
+					ref={form.textareaRef}
 					name="text-prompt"
 					rows={1}
 					wrap="hard"
 					autoComplete="off"
-					onKeyDown={handleKeyDown}
+					onKeyDown={form.onkeydown}
 				></textarea>
 				<div className="flex justify-end">
 					{props.isLoading ? (
-						<button onClick={props.onStopMessage}>
+						<button onClick={props.stopMessage}>
 							<StopIcon width={23} height={23} />
 						</button>
 					) : (
 						<button
-							ref={submitButtonRef}
+							ref={form.submitButtonRef}
 							className={`p-1 rounded-md ${
-								activated
+								form.activated
 									? "border-2 border-gray-600 border-solid"
 									: "border-2 border-gray-300 border-solid"
 							}`}
 							type="submit"
-							disabled={!activated}
+							disabled={!form.activated}
 						>
 							<ArrowUpIcon
 								width={13}
 								height={13}
 								fill={
-									activated
+									form.activated
 										? "rgb(75 85 99 / var(--tw-border-opacity))"
 										: "rgb(209 213 219 / var(--tw-border-opacity))"
 								}
