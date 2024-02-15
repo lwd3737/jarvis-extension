@@ -9,16 +9,12 @@ export default function ChatWindow() {
 
 	return (
 		<div className="flex flex-col h-full">
-			<div className="h-[85%]">
-				<ChatHistoryBox history={chat.messages} />
-			</div>
-			<div className="fixed bottom-0 left-0 right-0 h-[15%]">
-				<MessageForm
-					isLoading={chat.isLoading}
-					onAppendMessage={chat.append}
-					onStopMessage={chat.stop}
-				/>
-			</div>
+			<ChatHistoryBox history={chat.messages} />
+			<MessageForm
+				isLoading={chat.isLoading}
+				onAppendMessage={chat.append}
+				onStopMessage={chat.stop}
+			/>
 		</div>
 	);
 }

@@ -26,23 +26,23 @@ export default memo(function MessageForm(props: MessageFormProps) {
 	const submitButtonRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(function onAutoResize() {
-		const el = textareaRef.current;
-		if (!el) {
+		const textareaEl = textareaRef.current;
+		if (!textareaEl) {
 			console.error(EXCEPTIONS.textareaElementNotExist);
 			return;
 		}
 
 		const autoResize = () => {
-			if (el.scrollHeight >= MAX_HEIGHT) {
-				el.style.overflowY = "scroll";
+			if (textareaEl.scrollHeight >= MAX_HEIGHT) {
+				textareaEl.style.overflowY = "scroll";
 			} else {
-				el.style.height = "auto";
-				el.style.height = `${el.scrollHeight}px`;
+				textareaEl.style.height = "auto";
+				textareaEl.style.height = `${textareaEl.scrollHeight}px`;
 			}
 		};
 
-		el.addEventListener("input", autoResize);
-		return () => el.removeEventListener("input", autoResize);
+		textareaEl.addEventListener("input", autoResize);
+		return () => textareaEl.removeEventListener("input", autoResize);
 	}, []);
 
 	const [activated, setActivated] = useState<boolean>(false);
@@ -82,6 +82,7 @@ export default memo(function MessageForm(props: MessageFormProps) {
 
 			const textareaEl = textareaRef.current!;
 			textareaEl.value = "";
+			textareaEl.dispatchEvent(new Event("input"));
 
 			setActivated(false);
 		},
@@ -115,7 +116,7 @@ export default memo(function MessageForm(props: MessageFormProps) {
 	);
 
 	return (
-		<form ref={formRef} className="h-full px-5 py-3" onSubmit={handleSubmit}>
+		<form ref={formRef} className="px-5 py-3" onSubmit={handleSubmit}>
 			<div className="h-full px-[16px] py-[14px] bg-gray-100 rounded-3xl">
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
