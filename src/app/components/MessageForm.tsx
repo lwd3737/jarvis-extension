@@ -64,9 +64,3 @@ export default memo(function MessageForm(props: MessageFormProps) {
 		</form>
 	);
 });
-
-const MAX_HEIGHT = 150;
-
-const EXCEPTIONS = {
-	textareaElementNotExist: "textarea element not exist",
-};
