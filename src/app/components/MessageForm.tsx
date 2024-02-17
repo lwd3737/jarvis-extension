@@ -3,10 +3,8 @@
 import { memo } from "react";
 import ArrowUpIcon from "./ArrowUpIcon";
 import StopIcon from "./StopIcon";
-import useMessageForm, {
-	MessageAppendHelper,
-	MessageStopHelper,
-} from "../hooks/useMessageForm";
+import { MessageAppendHelper, MessageStopHelper } from "./ChatWindow";
+import useMessageForm from "../hooks/useMessageForm";
 
 type MessageFormProps = {
 	isLoading: boolean;
@@ -30,7 +28,7 @@ export default memo(function MessageForm(props: MessageFormProps) {
 					rows={1}
 					wrap="hard"
 					autoComplete="off"
-					onKeyDown={form.onkeydown}
+					onKeyDown={form.onKeyDown}
 				></textarea>
 				<div className="flex justify-end">
 					{props.isLoading ? (

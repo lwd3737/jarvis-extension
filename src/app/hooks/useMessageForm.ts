@@ -7,9 +7,10 @@ import {
 	useRef,
 	useState,
 } from "react";
-
-export type MessageAppendHelper = ChatHelpers["append"];
-export type MessageStopHelper = ChatHelpers["stop"];
+import {
+	MessageAppendHelper,
+	MessageStopHelper,
+} from "../components/ChatWindow";
 
 export default function useMessageForm(input: {
 	appendMessage: MessageAppendHelper;
@@ -69,10 +70,7 @@ export default function useMessageForm(input: {
 			const text = formData.get("text-prompt");
 			if (!text) return;
 
-			input.appendMessage({
-				content: text.toString(),
-				role: "user",
-			});
+			input.appendMessage(text.toString());
 
 			const textareaEl = textareaRef.current!;
 			textareaEl.value = "";
@@ -115,7 +113,7 @@ export default function useMessageForm(input: {
 		submitButtonRef,
 		activated,
 		onSubmit: handleSubmit,
-		onkeydown: handleKeyDown,
+		onKeyDown: handleKeyDown,
 	};
 }
 

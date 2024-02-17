@@ -1,13 +1,7 @@
 import OpenAI from "openai";
 import { MyConfigService } from ".";
 import { IService, getService } from "./service";
-import {
-	CompletionCreateResult,
-	CompletionMessage,
-	CompletionSystemMessage,
-	CompletionUserMessage,
-} from "../models/chat";
-import { Message, OpenAIStream, StreamingTextResponse } from "ai";
+import { CompletionMessage, CompletionSystemMessage } from "../models/chat";
 import { Stream } from "openai/streaming.mjs";
 
 export class ChatCompletionService implements IService {
