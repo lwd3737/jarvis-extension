@@ -2,7 +2,6 @@
 
 import { memo } from "react";
 import ArrowUpIcon from "./ArrowUpIcon";
-import { useChat } from "ai/react";
 import StopIcon from "./StopIcon";
 import useMessageForm, {
 	MessageAppendHelper,
