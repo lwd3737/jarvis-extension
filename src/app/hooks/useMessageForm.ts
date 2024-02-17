@@ -1,4 +1,3 @@
-import { ChatHelpers } from "@/src/types/chat";
 import {
 	FormEventHandler,
 	KeyboardEventHandler,
