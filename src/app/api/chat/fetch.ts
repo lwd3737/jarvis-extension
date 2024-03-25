@@ -1,16 +1,13 @@
-import { CompletionCreateResult, CompletionMessage } from "@/src/models/chat";
-import { baseFetch } from "../shared";
-import { Message } from "ai";
+import { CompletionUserMessage } from "@/src/models/chat";
+import { json } from "@/src/utils/fetch";
 
-export interface CompletionCreateRequestBody {
-	messages: CompletionMessage[];
-}
+export type MessageAppendRequestBody = CompletionUserMessage;
 
-export default async function createChatCompletion(
-	body: CompletionCreateRequestBody,
-) {
-	return baseFetch<CompletionCreateResult>("chat/completion", {
+export async function sendUserMessage(
+	body: CompletionUserMessage,
+): Promise<Response> {
+	return fetch("/api/chat", {
 		method: "POST",
-		body,
+		body: json(body),
 	});
 }

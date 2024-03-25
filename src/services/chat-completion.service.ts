@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { MyConfigService } from ".";
 import { IService, getService } from "./service";
 import { CompletionMessage, CompletionSystemMessage } from "../models/chat";
-import { Stream } from "openai/streaming.mjs";
+import { OpenAIStream, StreamingTextResponse } from "ai";
 
 export class ChatCompletionService implements IService {
 	private openai: OpenAI;
@@ -14,7 +14,6 @@ export class ChatCompletionService implements IService {
 		configService: MyConfigService,
 		systemMessage?: CompletionSystemMessage,
 	) {
-		console.log("model", configService.get().gptModel);
 		this.openai = new OpenAI({ apiKey: configService.get().apiKey });
 		this.model = configService.get().gptModel;
 		// this.systemMessage = systemMessage ?? {
@@ -24,16 +23,40 @@ export class ChatCompletionService implements IService {
 		this.messages = [];
 	}
 
-	public async createCompletion(
+	public async old__createCompletion(
 		messages: CompletionMessage[],
-	): Promise<Stream<OpenAI.Chat.Completions.ChatCompletionChunk>> {
-		this.messages = messages;
-		return this.openai.chat.completions.create({
-			// messages: [...this.messages, ...messages],
+	): Promise<StreamingTextResponse> {
+		const res = await this.openai.chat.completions.create({
 			messages,
 			model: this.model,
 			stream: true,
 		});
+		const stream = OpenAIStream(res);
+		return new StreamingTextResponse(stream);
+	}
+
+	public async createCompletion(
+		prompt: CompletionMessage,
+	): Promise<StreamingTextResponse> {
+		const res = await this.openai.chat.completions.create({
+			messages: [...this.messages, prompt],
+			model: this.model,
+			stream: true,
+		});
+		const stream = OpenAIStream(res, {
+			onStart: () => {
+				this.messages.push(prompt);
+			},
+			onFinal: (completion: string) => {
+				console.log("completion", completion);
+				this.messages.push({
+					role: "system",
+					content: completion,
+				});
+			},
+		});
+
+		return new StreamingTextResponse(stream);
 	}
 
 	public clearMessages(): void {
