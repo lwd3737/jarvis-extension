@@ -37,33 +37,23 @@ export class ChatCompletionService implements IService {
 
 	public async createCompletion(
 		prompt: CompletionMessage,
-	): Promise<StreamingTextResponse> {
+	): Promise<ReadableStream> {
 		const res = await this.openai.chat.completions.create({
 			messages: [...this.messages, prompt],
 			model: this.model,
 			stream: true,
 		});
-		const stream = OpenAIStream(res, {
+		return OpenAIStream(res, {
 			onStart: () => {
 				this.messages.push(prompt);
 			},
 			onFinal: (completion: string) => {
-				// console.log("final", completion);
-
 				this.messages.push({
 					role: "assistant",
 					content: completion,
 				});
 			},
-			onCompletion: (completion) => {
-				console.log("completion!!!!", completion);
-			},
-			onToken(token) {
-				console.log("token", token);
-			},
 		});
-
-		return new StreamingTextResponse(stream);
 	}
 
 	public clearMessages(): void {

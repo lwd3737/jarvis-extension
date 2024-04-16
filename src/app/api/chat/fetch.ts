@@ -3,7 +3,7 @@ import { json } from "@/src/utils/fetch";
 
 export type MessageAppendRequestBody = CompletionUserMessage;
 
-export async function sendUserMessage(
+export async function sendPrompt(
 	body: CompletionUserMessage,
 	signal: AbortSignal,
 ): Promise<Response> {
