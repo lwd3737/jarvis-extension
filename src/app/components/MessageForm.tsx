@@ -4,18 +4,17 @@ import { memo } from "react";
 import ArrowUpIcon from "./ArrowUpIcon";
 import StopIcon from "./StopIcon";
 import { MessageAppendHelper, MessageStopHelper } from "./ChatWindow";
-import useMessageForm from "../hooks/useMessageForm";
+import useMessageForm, { MESSAGE_FORM_INPUT_ID } from "../hooks/useMessageForm";
 
 type MessageFormProps = {
 	isLoading: boolean;
-	appendMessage: MessageAppendHelper;
-	stopMessage: MessageStopHelper;
+	append: MessageAppendHelper;
+	stop: MessageStopHelper;
 };
 
 export default memo(function MessageForm(props: MessageFormProps) {
 	const form = useMessageForm({
-		appendMessage: props.appendMessage,
-		stopMessage: props.stopMessage,
+		append: props.append,
 	});
 
 	return (
@@ -24,7 +23,7 @@ export default memo(function MessageForm(props: MessageFormProps) {
 				<textarea
 					className="w-full leading-[20px] text-[15px] bg-inherit resize-none outline-none"
 					ref={form.textareaRef}
-					name="text-prompt"
+					name={MESSAGE_FORM_INPUT_ID}
 					rows={1}
 					wrap="hard"
 					autoComplete="off"
@@ -32,25 +31,25 @@ export default memo(function MessageForm(props: MessageFormProps) {
 				></textarea>
 				<div className="flex justify-end">
 					{props.isLoading ? (
-						<button onClick={props.stopMessage}>
+						<button onClick={props.stop}>
 							<StopIcon width={23} height={23} />
 						</button>
 					) : (
 						<button
 							ref={form.submitButtonRef}
 							className={`p-1 rounded-md ${
-								form.activated
+								form.submitEnabled
 									? "border-2 border-gray-600 border-solid"
 									: "border-2 border-gray-300 border-solid"
 							}`}
 							type="submit"
-							disabled={!form.activated}
+							disabled={!form.submitEnabled}
 						>
 							<ArrowUpIcon
 								width={13}
 								height={13}
 								fill={
-									form.activated
+									form.submitEnabled
 										? "rgb(75 85 99 / var(--tw-border-opacity))"
 										: "rgb(209 213 219 / var(--tw-border-opacity))"
 								}

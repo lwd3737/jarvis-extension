@@ -48,11 +48,18 @@ export class ChatCompletionService implements IService {
 				this.messages.push(prompt);
 			},
 			onFinal: (completion: string) => {
-				console.log("completion", completion);
+				// console.log("final", completion);
+
 				this.messages.push({
-					role: "system",
+					role: "assistant",
 					content: completion,
 				});
+			},
+			onCompletion: (completion) => {
+				console.log("completion!!!!", completion);
+			},
+			onToken(token) {
+				console.log("token", token);
 			},
 		});
 

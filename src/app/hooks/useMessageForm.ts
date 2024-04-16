@@ -11,10 +11,7 @@ import {
 	MessageStopHelper,
 } from "../components/ChatWindow";
 
-export default function useMessageForm(input: {
-	appendMessage: MessageAppendHelper;
-	stopMessage: MessageStopHelper;
-}) {
+export default function useMessageForm(input: { append: MessageAppendHelper }) {
 	const formRef = useRef<HTMLFormElement>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -39,23 +36,23 @@ export default function useMessageForm(input: {
 		return () => textareaEl.removeEventListener("input", autoResize);
 	}, []);
 
-	const [activated, setActivated] = useState<boolean>(false);
+	const [submitEnabled, setSubmitEnabled] = useState<boolean>(false);
 
-	useEffect(function toggleSubmitActivationOnInput() {
+	useEffect(function toggleSubmitEnabledOnInput() {
 		const el = textareaRef.current;
 		if (!el) {
 			console.error(EXCEPTIONS.textareaElementNotExist);
 			return;
 		}
 
-		const toggleSubmitActivated = () => {
+		const toggleSubmitEnabled = () => {
 			const textLength = el.value.length;
-			if (textLength > 0) setActivated(true);
-			else setActivated(false);
+			if (textLength > 0) setSubmitEnabled(true);
+			else setSubmitEnabled(false);
 		};
 
-		el.addEventListener("input", toggleSubmitActivated);
-		return () => el.removeEventListener("input", toggleSubmitActivated);
+		el.addEventListener("input", toggleSubmitEnabled);
+		return () => el.removeEventListener("input", toggleSubmitEnabled);
 	}, []);
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
@@ -66,28 +63,28 @@ export default function useMessageForm(input: {
 			if (!formEl) return;
 
 			const formData = new FormData(formEl);
-			const text = formData.get("text-prompt");
+			const text = formData.get(MESSAGE_FORM_INPUT_ID);
 			if (!text) return;
 
-			input.appendMessage(text.toString());
+			input.append(text.toString());
 
 			const textareaEl = textareaRef.current!;
 			textareaEl.value = "";
 			textareaEl.dispatchEvent(new Event("input"));
 
-			setActivated(false);
+			setSubmitEnabled(false);
 		},
 		[input],
 	);
 
 	const triggerSubmit = useCallback(() => {
-		if (!activated) return;
+		if (!submitEnabled) return;
 
 		const formEl = formRef.current!;
 		const btnEl = submitButtonRef.current!;
 
 		formEl.requestSubmit(btnEl);
-	}, [activated]);
+	}, [submitEnabled]);
 
 	const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = useCallback(
 		(e) => {
@@ -110,7 +107,7 @@ export default function useMessageForm(input: {
 		formRef,
 		textareaRef,
 		submitButtonRef,
-		activated,
+		submitEnabled,
 		onSubmit: handleSubmit,
 		onKeyDown: handleKeyDown,
 	};
@@ -121,3 +118,5 @@ const MAX_HEIGHT = 150;
 const EXCEPTIONS = {
 	textareaElementNotExist: "textarea element not exist",
 };
+
+export const MESSAGE_FORM_INPUT_ID = "text-prompt";
