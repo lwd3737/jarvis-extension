@@ -23,18 +23,6 @@ export class ChatCompletionService implements IService {
 		this.messages = [];
 	}
 
-	public async old__createCompletion(
-		messages: CompletionMessage[],
-	): Promise<StreamingTextResponse> {
-		const res = await this.openai.chat.completions.create({
-			messages,
-			model: this.model,
-			stream: true,
-		});
-		const stream = OpenAIStream(res);
-		return new StreamingTextResponse(stream);
-	}
-
 	public async createCompletion(
 		prompt: CompletionMessage,
 	): Promise<ReadableStream> {
