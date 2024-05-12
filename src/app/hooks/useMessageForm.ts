@@ -6,10 +6,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import {
-	MessageAppendHelper,
-	MessageStopHelper,
-} from "../components/ChatWindow";
+import { MessageAppendHelper } from "../components/ChatWindow";
 
 export default function useMessageForm(input: { append: MessageAppendHelper }) {
 	const formRef = useRef<HTMLFormElement>(null);

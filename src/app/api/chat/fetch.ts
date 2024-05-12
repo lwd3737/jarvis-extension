@@ -7,9 +7,13 @@ export async function sendPrompt(
 	body: CompletionUserMessage,
 	signal: AbortSignal,
 ): Promise<Response> {
-	return fetch("/api/chat", {
+	location.host;
+	return fetch(`http://localhost:8000/api/chat`, {
 		method: "POST",
 		body: json(body),
+		headers: {
+			"Content-Type": "application/json",
+		},
 		signal,
 	});
 }

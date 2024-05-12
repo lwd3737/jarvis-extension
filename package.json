@@ -1,10 +1,10 @@
 {
-	"name": "browser-chatbot",
+	"name": "ai-browser-assistant-extension",
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "node ./build",
+		"build": "next build --debug && node ./build",
 		"start": "next start",
 		"lint": "next lint",
 		"test": "vitest"

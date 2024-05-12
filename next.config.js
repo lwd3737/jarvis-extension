@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-	// output: "export",
+	output: "export",
 	images: {
 		unoptimized: true,
 	},
@@ -10,8 +10,10 @@ const nextConfig = {
 	},
 };
 
-if (process.env.NODE_ENV === "production") {
-	nextConfig.distDir = "extension";
-}
+// if (process.env.NODE_ENV === "production") {
+// 	nextConfig.distDir = "extension";
+// } else {
+// 	nextConfig.distDir = ".next";
+// }
 
 module.exports = nextConfig;

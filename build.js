@@ -13,6 +13,7 @@ function runCommand(command) {
 			console.info(`${command}`);
 
 			if (stderr) console.error(`${stderr}`);
+			else console.info(stdout);
 
 			resolve();
 		});
@@ -20,7 +21,8 @@ function runCommand(command) {
 }
 
 async function runCommands() {
-	await runCommand("yarn next build");
+	if (fs.existsSync("extension")) await runCommand("rm -r extension");
+	await runCommand("mv out extension");
 	// manifest.json, scripts 복사 및 컴파일
 	await runCommand(
 		"cp manifest.json extension/manifest.json && yarn tsc -p tsconfig.extension.json",
