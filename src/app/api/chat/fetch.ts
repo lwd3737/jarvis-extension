@@ -2,10 +2,7 @@ import { getConfig } from "@/src/services";
 import { json } from "@/src/utils/fetch";
 import { CoreUserMessage } from "ai";
 
-export async function sendPrompt(
-	body: CoreUserMessage,
-	signal: AbortSignal,
-): Promise<Response> {
+export async function sendPrompt(body: CoreUserMessage): Promise<Response> {
 	const { backendUrl } = getConfig();
 
 	return fetch(`${backendUrl}/api/chat`, {
@@ -14,6 +11,5 @@ export async function sendPrompt(
 		headers: {
 			"Content-Type": "application/json",
 		},
-		signal,
 	});
 }
