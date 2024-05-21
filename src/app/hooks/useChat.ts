@@ -1,12 +1,17 @@
-import { CompletionMessage, CompletionUserMessage } from "@/src/domains/chat";
 import { useCallback, useRef, useState } from "react";
 import { sendPrompt } from "../api/chat/fetch";
-import { CoreTool, TextStreamPart } from "ai";
+import {
+	CoreAssistantMessage,
+	CoreMessage,
+	CoreTool,
+	CoreUserMessage,
+	TextStreamPart,
+} from "ai";
 import useConfig from "./useConfig";
 
 export default function useChat() {
 	const config = useConfig();
-	const [messages, setMessages] = useState<CompletionMessage[]>([]);
+	const [messages, setMessages] = useState<CoreMessage[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const abortControllerRef = useRef<AbortController | null>(null);
@@ -19,7 +24,7 @@ export default function useChat() {
 			const prompt = {
 				role: "user",
 				content,
-			} as CompletionUserMessage;
+			} as CoreUserMessage;
 
 			setMessages((prev) => [...prev, prompt]);
 
@@ -41,7 +46,7 @@ export default function useChat() {
 							const newMessage = {
 								role: "assistant",
 								content: data.textDelta,
-							} as CompletionMessage;
+							} as CoreAssistantMessage;
 
 							setMessages((prev) => [...prev, newMessage]);
 						} else {
@@ -50,7 +55,7 @@ export default function useChat() {
 								const updatedMessage = {
 									...streamingMessage,
 									content: streamingMessage.content + data.textDelta,
-								} as CompletionMessage;
+								} as CoreAssistantMessage;
 
 								return [...prev.slice(0, -1), updatedMessage];
 							});

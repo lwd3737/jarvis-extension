@@ -1,7 +1,7 @@
-import { CompletionContentPart, CompletionMessage } from "@/src/domains/chat";
+import { CoreMessage } from "ai";
 
 interface MessageProps {
-	message: CompletionMessage;
+	message: CoreMessage;
 }
 
 export default function MessageItem(props: MessageProps) {
@@ -19,9 +19,7 @@ const formatRole = (role: string) => {
 	return role[0].toUpperCase() + role.slice(1);
 };
 
-const parseContent = (
-	content: string | Array<CompletionContentPart> | null,
-): string => {
+const parseContent = (content: CoreMessage["content"]): string => {
 	if (Array.isArray(content)) {
 		const textContent = content
 			.filter((part) => part.type === "text")

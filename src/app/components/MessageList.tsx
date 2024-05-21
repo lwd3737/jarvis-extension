@@ -1,9 +1,9 @@
-import { CompletionMessage } from "@/src/domains/chat";
 import { memo, useEffect, useMemo, useRef } from "react";
 import MessageItem from "./MessageItem";
+import { CoreMessage } from "ai";
 
 type MessageListProps = {
-	messages: CompletionMessage[];
+	messages: CoreMessage[];
 };
 
 const MessageList = memo((props: MessageListProps) => {
