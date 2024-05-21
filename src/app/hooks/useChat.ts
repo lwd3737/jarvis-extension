@@ -8,6 +8,7 @@ import {
 	TextStreamPart,
 } from "ai";
 import useConfig from "./useConfig";
+import { CHAT_EVENT } from "@/constants/events";
 
 export default function useChat() {
 	const config = useConfig();
@@ -55,7 +56,7 @@ export default function useChat() {
 					setLoading(false);
 					started = false;
 					eventSource.close();
-					eventSource.removeEventListener("chat.stream", listener);
+					eventSource.removeEventListener(CHAT_EVENT.stream, listener);
 					break;
 				case "error":
 					console.error(data.error);
@@ -65,11 +66,11 @@ export default function useChat() {
 			}
 		};
 
-		eventSource.addEventListener("chat.stream", listener);
+		eventSource.addEventListener(CHAT_EVENT.stream, listener);
 
 		eventSource.onerror = (e) => {
 			console.error(e);
-			eventSource.removeEventListener("chat.stream", listener);
+			eventSource.removeEventListener(CHAT_EVENT.stream, listener);
 			eventSource.close();
 		};
 	}, [config]);
