@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { MyConfigService } from ".";
+import { DefaultConfigService } from ".";
 
 type Assistant = OpenAI.Beta.Assistants.Assistant;
 type Thread = OpenAI.Beta.Threads.Thread;
@@ -12,7 +12,7 @@ export default class AssistantService {
 	private thread?: Thread;
 
 	public static async create(
-		configService: MyConfigService,
+		configService: DefaultConfigService,
 		options?: AssistantOptions,
 	): Promise<AssistantService> {
 		const { gptModel } = configService.get();

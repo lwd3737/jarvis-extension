@@ -3,46 +3,29 @@ import { IService } from "./service";
 
 type Config = Record<string, any>;
 
-class ConfigServiceBuilder<T extends Config> {
-	private config: T;
+export class ConfigService<T extends Config> implements IService {
+	constructor(private config: T) {}
 
-	constructor(envVarNames: string[]) {
-		this.validateEnvVars(envVarNames);
+	private validate(config: T) {
+		const values = Object.values(config);
+		if (values.length === 0) this.throwInvalidValueError(values);
 
-		const envVars = envVarNames.reduce((record, name) => {
-			record[name] = process.env[name]!;
-			return record;
-		}, {} as Record<string, string>);
+		values.forEach((value) => {
+			if (value === undefined || value === null)
+				this.throwInvalidValueError(value);
 
-		this.config = envVars as T;
-	}
+			if (Array.isArray(value)) {
+				if (value.length === 0) this.throwInvalidValueError(value);
+			}
 
-	private validateEnvVars(names: string[]) {
-		names.forEach((name) => {
-			if (!(name in process.env))
-				throw new Error(`[${ConfigService.name}] ${names} is not set`);
+			if (typeof value === "object") {
+				this.validate(config);
+			}
 		});
 	}
 
-	public build(): ConfigService<T> {
-		return new ConfigService(this.config);
-	}
-
-	public format(to: (envVars: Record<string, string>) => T): this {
-		this.config = to(this.config);
-		return this;
-	}
-}
-
-export class ConfigService<T extends Config> implements IService {
-	private config: T;
-
-	public static builder<T extends Config = Config>(envVarNames: string[]) {
-		return new ConfigServiceBuilder<T>(envVarNames);
-	}
-
-	constructor(config: T) {
-		this.config = deepFreeze(config) as T;
+	private throwInvalidValueError(value: any): void {
+		throw new Error(`[${ConfigService.name}] ${value} is not set`);
 	}
 
 	public get(): T {

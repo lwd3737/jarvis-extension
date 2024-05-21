@@ -1,5 +1,3 @@
-import { MyConfig } from ".";
-import { ChatCompletionService } from "./chat-completion.service";
 import { ConfigService } from "./config.service";
 import { DIContainer } from "./di-container";
 
@@ -8,26 +6,17 @@ export async function bind() {
 
 	const container = new DIContainer();
 
-	container.toFactory(
-		{
-			useClass: ConfigService,
-			dependencies: ["OPENAI_API_KEY", "GPT_MODEL"],
-		},
-		(serviceClass, dependencies) => {
-			const configServiceClass = serviceClass as typeof ConfigService;
-			return configServiceClass
-				.builder<MyConfig>(dependencies as string[])
-				.format(({ OPENAI_API_KEY, GPT_MODEL }) => ({
-					apiKey: OPENAI_API_KEY,
-					gptModel: GPT_MODEL,
-				}))
-				.build();
-		},
-	);
-
-	container.bind(ChatCompletionService, [container.get(ConfigService)]);
+	container.bind(ConfigService, {
+		baseUrl: `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`,
+		backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
+	});
 
 	globalThis.__container = container;
+}
+
+export function unbind() {
+	console.info(`[DIContainer]Unbinding services for ${getRuntime()} runtime`);
+	globalThis.__container = null;
 }
 
 function getRuntime() {

@@ -7,7 +7,7 @@ export class DIContainer {
 		this._services = new Map<string, IService>();
 	}
 
-	public bind(service: ServiceClass, dependencies?: any[]): void {
+	public bind(service: ServiceClass, ...dependencies: any): void {
 		this.throwIfAlreadyBound(service);
 
 		const instance = dependencies

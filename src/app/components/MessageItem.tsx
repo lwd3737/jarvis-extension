@@ -1,4 +1,4 @@
-import { CompletionContentPart, CompletionMessage } from "@/src/models/chat";
+import { CompletionContentPart, CompletionMessage } from "@/src/domains/chat";
 
 interface MessageProps {
 	message: CompletionMessage;

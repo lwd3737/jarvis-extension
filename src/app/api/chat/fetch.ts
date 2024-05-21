@@ -1,4 +1,5 @@
-import { CompletionUserMessage } from "@/src/models/chat";
+import { CompletionUserMessage } from "@/src/domains/chat";
+import { getConfig } from "@/src/services";
 import { json } from "@/src/utils/fetch";
 
 export type MessageAppendRequestBody = CompletionUserMessage;
@@ -7,8 +8,9 @@ export async function sendPrompt(
 	body: CompletionUserMessage,
 	signal: AbortSignal,
 ): Promise<Response> {
-	location.host;
-	return fetch(`http://localhost:8000/api/chat`, {
+	const { backendUrl } = getConfig();
+
+	return fetch(`${backendUrl}/api/chat`, {
 		method: "POST",
 		body: json(body),
 		headers: {

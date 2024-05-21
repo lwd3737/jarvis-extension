@@ -1,4 +1,4 @@
-import { CompletionMessage } from "@/src/models/chat";
+import { CompletionMessage } from "@/src/domains/chat";
 import { memo, useEffect, useMemo, useRef } from "react";
 import MessageItem from "./MessageItem";
 
