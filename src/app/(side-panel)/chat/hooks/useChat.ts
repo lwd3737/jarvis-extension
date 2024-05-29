@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { sendPrompt } from "../api/chat/fetch";
+import { sendPrompt } from "../../../api/chat/fetch";
 import {
 	CoreAssistantMessage,
 	CoreMessage,
@@ -7,8 +7,8 @@ import {
 	CoreUserMessage,
 	TextStreamPart,
 } from "ai";
-import useConfig from "./useConfig";
 import { CHAT_EVENT } from "@/constants/events";
+import useConfig from "../../hooks/useConfig";
 
 export default function useChat() {
 	const config = useConfig();

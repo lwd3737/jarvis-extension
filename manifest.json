@@ -36,6 +36,6 @@
 			"matches": ["*://*/*"]
 		}
 	],
-	"permissions": ["sidePanel"],
+	"permissions": ["sidePanel", "cookies"],
 	"host_permissions": ["*://*/*"]
 }

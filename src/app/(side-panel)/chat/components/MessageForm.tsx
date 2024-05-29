@@ -1,5 +1,4 @@
 "use client";
-
 import { memo } from "react";
 import ArrowUpIcon from "./ArrowUpIcon";
 import StopIcon from "./StopIcon";
