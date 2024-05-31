@@ -1,18 +1,15 @@
-import { getConfig } from "@/src/services";
+import { json } from "@/src/utils/fetch";
+import { baseFetch } from "../base-fetch";
 
 export async function login(credentials: {
 	email: string;
 	password: string;
 }): Promise<{ accessToken: string }> {
-	const { backendUrl } = getConfig();
-	const res = await fetch(`${backendUrl}/api/auth/login`, {
+	const res = await baseFetch("auth/login", {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(credentials),
+		body: json(credentials),
 	});
-	if (!res.ok) throw new Error("Failed to login");
 
+	if (!res.ok) throw new Error("Failed to login");
 	return res.json();
 }

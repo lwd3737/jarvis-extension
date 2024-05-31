@@ -1,3 +1,4 @@
+import { getContainer } from "../helpers";
 import { IService } from "../service";
 import ChromeStorageService from "./chrome-storage.service";
 import LocalStorageService from "./local-storage.service";
@@ -20,4 +21,9 @@ export default class StorageService implements IService {
 	public async set(key: string, value: any): Promise<void> {
 		return this.storage.set(key, value);
 	}
+}
+
+export function getStorageService(): StorageService {
+	const container = getContainer();
+	return container.get<StorageService>(StorageService);
 }

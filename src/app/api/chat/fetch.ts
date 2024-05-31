@@ -1,15 +1,10 @@
-import { getConfig } from "@/src/services";
 import { json } from "@/src/utils/fetch";
 import { CoreUserMessage } from "ai";
+import { fetchWithToken } from "../base-fetch";
 
 export async function sendPrompt(body: CoreUserMessage): Promise<Response> {
-	const { backendUrl } = getConfig();
-
-	return fetch(`${backendUrl}/api/chat`, {
+	return fetchWithToken("chat", {
 		method: "POST",
 		body: json(body),
-		headers: {
-			"Content-Type": "application/json",
-		},
 	});
 }
