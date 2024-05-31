@@ -1,14 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { createContext, useCallback, useEffect, useState } from "react";
-
-interface UserProfile {
-	email: string;
-}
+import useStorage from "../hooks/useStorage";
 
 export const AuthContext = createContext<{
-	profile: UserProfile | null;
-	login: (profile: UserProfile) => void;
+	isLogined: boolean;
+	login: () => void;
 	logout: () => void;
 } | null>(null);
 
@@ -17,31 +14,31 @@ export default function AuthProvider({
 }: {
 	children: React.ReactNode;
 }) {
-	const [profile, setProfile] = useState<UserProfile | null>(null);
+	const storage = useStorage();
+
+	const [isLogined, setIsLogined] = useState<boolean>(false);
 
 	const router = useRouter();
 
 	useEffect(
-		function navigateToLoginOnUnauthenticated() {
-			if (!profile) router.replace("/login");
+		function onAuthenticate() {
+			storage?.get<string>("accessToken").then((accessToken) => {
+				if (!accessToken) router.replace("/login");
+			});
 		},
-		[profile, router],
+		[router, storage],
 	);
 
-	const login = useCallback(
-		(profile: UserProfile) => {
-			setProfile(profile);
-			router.replace("/chat");
-		},
-		[router],
-	);
+	const login = useCallback(() => {
+		router.replace("/chat");
+	}, [router]);
 
 	const logout = useCallback(() => {
-		setProfile(null);
+		setIsLogined(false);
 	}, []);
 
 	return (
-		<AuthContext.Provider value={{ profile, login, logout }}>
+		<AuthContext.Provider value={{ isLogined, login, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

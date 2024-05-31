@@ -1,5 +1,6 @@
 import { ConfigService } from "./config.service";
 import { DIContainer } from "./di-container";
+import StorageService from "./storage/storage.service";
 
 export async function bind() {
 	console.info(`[DIContainer]Binding services for ${getRuntime()} runtime`);
@@ -10,6 +11,8 @@ export async function bind() {
 		baseUrl: `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`,
 		backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
 	});
+
+	container.bind(StorageService);
 
 	globalThis.__container = container;
 }

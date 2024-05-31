@@ -1,4 +1,11 @@
+import LoginForm from "./components/LoginForm";
+
 export default function LoginPage() {
-	console.log("Login Page");
-	return <div>Login</div>;
+	return (
+		<div className="flex justify-center h-full py-11">
+			<div className="w-[60%]">
+				<LoginForm />
+			</div>
+		</div>
+	);
 }
