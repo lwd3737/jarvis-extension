@@ -9,18 +9,29 @@ import {
 } from "ai";
 import { CHAT_EVENT } from "@/constants/events";
 import useConfig from "../../hooks/useConfig";
+import useStorage from "../../hooks/useStorage";
+import { useRouter } from "next/navigation";
 
 export default function useChat() {
+	const router = useRouter();
+
 	const config = useConfig();
+	const storage = useStorage();
 
 	const [messages, setMessages] = useState<CoreMessage[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const eventSourceRef = useRef<EventSource | null>(null);
 
-	const handleStream = useCallback(() => {
+	const handleStream = useCallback(async () => {
+		const accessToken = await storage?.get("accessToken");
+		if (!accessToken) {
+			router.replace("/login");
+			return;
+		}
+
 		const eventSource = (eventSourceRef.current = new EventSource(
-			`${config!.backendUrl}/api/chat/stream`,
+			`${config!.backendUrl}/api/chat/stream?accessToken=${accessToken}`,
 		));
 
 		let started = false;
@@ -73,7 +84,7 @@ export default function useChat() {
 			eventSource.removeEventListener(CHAT_EVENT.stream, listener);
 			eventSource.close();
 		};
-	}, [config]);
+	}, [config, storage]);
 
 	const append = useCallback(
 		async (content: string) => {
