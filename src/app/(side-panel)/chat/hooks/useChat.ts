@@ -31,8 +31,17 @@ export default function useChat() {
 		}
 
 		const eventSource = (eventSourceRef.current = new EventSource(
+			// TODO: 보안 이슈로 인해 accessToken을 query string으로 전달하는 것은 좋지 않으므로 수정이 필요
 			`${config!.backendUrl}/api/chat/stream?accessToken=${accessToken}`,
 		));
+
+		eventSource.onopen = () => {
+			// TODO: access token을 전송해서 인증. 실패하면 연결 종룧하고 로그인 페이지로 이동
+		};
+		eventSource.onerror = (event) => {
+			console.error(event);
+			eventSource.close();
+		};
 
 		let started = false;
 		const listener = (event: MessageEvent) => {
@@ -84,7 +93,7 @@ export default function useChat() {
 			eventSource.removeEventListener(CHAT_EVENT.stream, listener);
 			eventSource.close();
 		};
-	}, [config, storage]);
+	}, [config, storage, router]);
 
 	const append = useCallback(
 		async (content: string) => {
@@ -102,10 +111,13 @@ export default function useChat() {
 			const res = await sendPrompt(prompt);
 			if (!res.ok) {
 				console.error("Failed to send prompt", res);
+
+				if (res.statusText === "Unauthorized") router.replace("/login");
+
 				return;
 			}
 		},
-		[handleStream, loading],
+		[handleStream, loading, router],
 	);
 
 	const stop = useCallback(() => {
