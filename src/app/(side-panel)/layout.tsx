@@ -8,7 +8,7 @@ import "./side-panel.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Chatbot for chrome extension",
+	title: "Jarvis",
 };
 
 export default function SidePannelLayout({
