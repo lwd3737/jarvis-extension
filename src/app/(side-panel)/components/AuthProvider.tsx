@@ -23,7 +23,11 @@ export default function AuthProvider({
 	useEffect(
 		function onAuthenticate() {
 			storage?.get<string>("accessToken").then((accessToken) => {
-				if (!accessToken) router.replace("/login");
+				console.log("accessToken", accessToken);
+				if (!accessToken) {
+					console.log("no access token");
+					router.replace("/login");
+				}
 			});
 		},
 		[router, storage],

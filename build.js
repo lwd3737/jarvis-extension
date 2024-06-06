@@ -35,8 +35,16 @@ async function runCommands() {
 	// import:  _next -> next
 	await runCommand("sed -i '' -e 's/\\/_next/\\.\\/next/g' extension/**.html");
 
-	const htmlFiles = ["extension/popup.html", "extension/index.html"];
+	const htmlFiles = findHtmlFiles();
 	htmlFiles.forEach((file) => extractInlineScripts(file));
+}
+
+function findHtmlFiles() {
+	const dirPath = "./extension";
+	const files = fs.readdirSync(dirPath);
+	return files
+		.map((file) => `${dirPath}/${file}`)
+		.filter((filePath) => filePath.endsWith(".html"));
 }
 
 async function extractInlineScripts(file) {
