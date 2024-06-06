@@ -4,6 +4,7 @@ import { createContext, useCallback, useEffect, useState } from "react";
 import useStorage from "../hooks/useStorage";
 
 export const AuthContext = createContext<{
+	loading: boolean;
 	isLogined: boolean;
 	login: () => void;
 	logout: () => void;
@@ -14,35 +15,50 @@ export default function AuthProvider({
 }: {
 	children: React.ReactNode;
 }) {
+	const router = useRouter();
 	const storage = useStorage();
 
+	const [loading, setLoading] = useState<boolean>(true);
 	const [isLogined, setIsLogined] = useState<boolean>(false);
-
-	const router = useRouter();
 
 	useEffect(
 		function onAuthenticate() {
 			storage?.get<string>("accessToken").then((accessToken) => {
-				console.log("accessToken", accessToken);
 				if (!accessToken) {
-					console.log("no access token");
-					router.replace("/login");
+					setIsLogined(false);
+				} else {
+					setIsLogined(true);
 				}
+
+				setLoading(false);
 			});
 		},
 		[router, storage],
 	);
 
 	const login = useCallback(() => {
-		router.replace("/chat");
-	}, [router]);
+		setIsLogined(true);
+	}, []);
 
 	const logout = useCallback(() => {
 		setIsLogined(false);
 	}, []);
 
+	useEffect(
+		function onAuthenticated() {
+			if (loading) return;
+
+			if (!isLogined) {
+				router.replace("/login");
+			} else {
+				router.replace("/chat");
+			}
+		},
+		[isLogined, loading, router],
+	);
+
 	return (
-		<AuthContext.Provider value={{ isLogined, login, logout }}>
+		<AuthContext.Provider value={{ loading, isLogined, login, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

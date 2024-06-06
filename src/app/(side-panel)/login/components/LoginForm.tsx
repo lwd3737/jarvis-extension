@@ -10,7 +10,6 @@ import useAuth from "../../hooks/useAuth";
 import useStorage from "../../hooks/useStorage";
 
 export default function LoginForm() {
-	console.log("LoginForm");
 	const auth = useAuth();
 
 	const [email, setEmail] = useState<string>("");
