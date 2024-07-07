@@ -38,6 +38,7 @@ export default function useChat() {
 		eventSource.onopen = () => {
 			// TODO: access token을 전송해서 인증. 실패하면 연결 종룧하고 로그인 페이지로 이동
 		};
+
 		eventSource.onerror = (event) => {
 			console.error(event);
 			eventSource.close();

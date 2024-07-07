@@ -10,6 +10,8 @@ export async function login(credentials: {
 		body: json(credentials),
 	});
 
-	if (!res.ok) throw new Error("Failed to login");
+	if (!res.ok) {
+		throw new Error(res.statusText);
+	}
 	return res.json();
 }
