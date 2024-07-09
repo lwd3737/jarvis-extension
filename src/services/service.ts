@@ -1,4 +1,4 @@
-import { ServiceNotBoundExeption } from "../exceptions/service";
+import { ServiceNotBoundExeption } from "../exceptions/service.exception";
 
 export type IServices = Map<string, IService>;
 

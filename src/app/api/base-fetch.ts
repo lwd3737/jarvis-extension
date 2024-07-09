@@ -1,7 +1,10 @@
 import { getConfig } from "@/src/services";
-import { getStorageService } from "@/src/services/storage/storage.service";
 
-export const baseFetch: typeof fetch = async (input, init) => {
+export const baseFetch = async (
+	...args: Parameters<typeof fetch>
+): Promise<Response> => {
+	const [input, init] = args;
+
 	const { backendUrl } = getConfig();
 	const url =
 		input instanceof URL
@@ -15,21 +18,6 @@ export const baseFetch: typeof fetch = async (input, init) => {
 		headers: {
 			"Content-Type": "application/json",
 			...init?.headers,
-		},
-	});
-};
-
-export const fetchWithToken: typeof fetch = async (input, init) => {
-	const storageService = getStorageService();
-
-	const accessToken = (await storageService.get("accessToken")) as string;
-	if (!accessToken) throw new Error("Access token is not found from storage");
-
-	return baseFetch(input, {
-		...init,
-		headers: {
-			...init?.headers,
-			Authorization: `Bearer ${accessToken}`,
 		},
 	});
 };

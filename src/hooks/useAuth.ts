@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { AuthContext } from "../components/AuthProvider";
+import { AuthContext } from "../app/(side-panel)/components/AuthProvider";
 
 export default function useAuth() {
 	const auth = useContext(AuthContext);

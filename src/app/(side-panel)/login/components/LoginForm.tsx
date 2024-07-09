@@ -6,8 +6,8 @@ import {
 	useCallback,
 	useState,
 } from "react";
-import useAuth from "../../hooks/useAuth";
-import useStorage from "../../hooks/useStorage";
+import useAuth from "../../../../hooks/useAuth";
+import useStorage from "../../../../hooks/useStorage";
 
 export default function LoginForm() {
 	const auth = useAuth();

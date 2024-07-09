@@ -8,15 +8,17 @@ import {
 	TextStreamPart,
 } from "ai";
 import { CHAT_EVENT } from "@/constants/events";
-import useConfig from "../../hooks/useConfig";
-import useStorage from "../../hooks/useStorage";
+import useConfig from "../../../../hooks/useConfig";
+import useStorage from "../../../../hooks/useStorage";
 import { useRouter } from "next/navigation";
+import { useAuthGuard } from "@/src/hooks/useAuthGuard";
 
 export default function useChat() {
 	const router = useRouter();
 
 	const config = useConfig();
 	const storage = useStorage();
+	const guard = useAuthGuard();
 
 	const [messages, setMessages] = useState<CoreMessage[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -109,16 +111,11 @@ export default function useChat() {
 			setMessages((prev) => [...prev, prompt]);
 			handleStream();
 
-			const res = await sendPrompt(prompt);
-			if (!res.ok) {
-				console.error("Failed to send prompt", res);
-
-				if (res.statusText === "Unauthorized") router.replace("/login");
-
-				return;
-			}
+			await guard(async () => {
+				await sendPrompt(prompt);
+			});
 		},
-		[handleStream, loading, router],
+		[guard, handleStream, loading],
 	);
 
 	const stop = useCallback(() => {
