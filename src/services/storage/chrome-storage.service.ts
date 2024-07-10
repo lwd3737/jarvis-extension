@@ -1,4 +1,6 @@
-export default class ChromeStorageService {
+import IStorageService from "./IStorage.service";
+
+export default class ChromeStorageService implements IStorageService {
 	private storage: typeof chrome.storage;
 
 	constructor() {
@@ -12,5 +14,9 @@ export default class ChromeStorageService {
 
 	public async set(key: string, value: any): Promise<void> {
 		this.storage.local.set({ [key]: value });
+	}
+
+	public async clear(): Promise<void> {
+		this.storage.local.clear();
 	}
 }

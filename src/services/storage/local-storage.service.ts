@@ -1,16 +1,22 @@
-export default class LocalStorageService {
+import IStorageService from "./IStorage.service";
+
+export default class LocalStorageService implements IStorageService {
 	private storage: Storage;
 
 	constructor() {
 		this.storage = window.localStorage;
 	}
 
-	public get<T = any>(key: string): T | null {
+	public async get<T = any>(key: string): Promise<T | null> {
 		const value = this.storage.getItem(key);
 		return value ? JSON.parse(value) : null;
 	}
 
-	public set(key: string, value: any): void {
+	public async set(key: string, value: any): Promise<void> {
 		this.storage.setItem(key, JSON.stringify(value));
+	}
+
+	public async clear(): Promise<void> {
+		this.storage.clear();
 	}
 }

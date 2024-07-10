@@ -42,7 +42,8 @@ export default function AuthProvider({
 
 	const logout = useCallback(() => {
 		setIsLogined(false);
-	}, []);
+		storage?.clear();
+	}, [storage]);
 
 	useEffect(
 		function onAuthenticated() {

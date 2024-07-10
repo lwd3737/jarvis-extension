@@ -1,9 +1,10 @@
 import { getContainer } from "../helpers";
 import { IService } from "../service";
+import IStorageService from "./IStorage.service";
 import ChromeStorageService from "./chrome-storage.service";
 import LocalStorageService from "./local-storage.service";
 
-export default class StorageService implements IService {
+export default class StorageService implements IService, IStorageService {
 	private storage: LocalStorageService | ChromeStorageService;
 
 	constructor() {
@@ -20,6 +21,10 @@ export default class StorageService implements IService {
 
 	public async set(key: string, value: any): Promise<void> {
 		return this.storage.set(key, value);
+	}
+
+	public async clear(): Promise<void> {
+		return this.storage.clear();
 	}
 }
 

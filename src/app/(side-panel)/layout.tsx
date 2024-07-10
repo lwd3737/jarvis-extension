@@ -20,10 +20,10 @@ export default function SidePannelLayout({
 		<html lang="en">
 			<body className={inter.className}>
 				<ContainerProvider>
-					<Header height="10%" />
-					<main className="h-[90%]">
-						<AuthProvider>{children}</AuthProvider>
-					</main>
+					<AuthProvider>
+						<Header height="10%" />
+						<main className="h-[90%]">{children}</main>
+					</AuthProvider>
 				</ContainerProvider>
 			</body>
 		</html>
