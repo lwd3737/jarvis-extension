@@ -45,7 +45,7 @@ export default function LoginForm() {
 			className="flex flex-col items-center w-full gap-y-11"
 			onSubmit={handleSubmit}
 		>
-			<h1 className="text-4xl font-bold">로그인</h1>
+			<h1 className="text-4xl font-bold">Login</h1>
 			<div className="flex flex-col items-center w-full gap-y-7">
 				<input
 					className="w-full px-3 py-2 text-lg border border-gray-300 rounded-md "

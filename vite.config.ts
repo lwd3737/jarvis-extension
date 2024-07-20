@@ -1,8 +1,19 @@
 /// <reference types="vitest" />
+import { resolve } from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	test: {
-		globals: true,
+	build: {
+		rollupOptions: {
+			input: {
+				// TODO: popup 추가
+				"content-script": resolve(__dirname, "src/scripts/content-script.ts"),
+				"service-worker": resolve(__dirname, "src/scripts/service-worker.ts"),
+			},
+			output: {
+				dir: "extension/scripts",
+				entryFileNames: "[name].js",
+			},
+		},
 	},
 });

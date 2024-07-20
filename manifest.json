@@ -14,13 +14,13 @@
 	},
 	"content_scripts": [
 		{
-			"js": ["./scripts/content-scripts/index.js"],
+			"js": ["./scripts/content-script.js"],
 			"css": ["./styles/content.css"],
 			"matches": ["*://*/*"]
 		}
 	],
 	"background": {
-		"service_worker": "./scripts/service-workers/index.js",
+		"service_worker": "./scripts/service-worker.js",
 		"type": "module"
 	},
 	"side_panel": {

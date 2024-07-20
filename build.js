@@ -24,9 +24,7 @@ async function runCommands() {
 	if (fs.existsSync("extension")) await runCommand("rm -r extension");
 	await runCommand("mv out extension");
 	// manifest.json, scripts 복사 및 컴파일
-	await runCommand(
-		"cp manifest.json extension/manifest.json && yarn tsc -p tsconfig.extension.json",
-	);
+	await runCommand("cp manifest.json extension/manifest.json");
 	await runCommand(
 		"mkdir extension/styles && cp src/styles/*.css extension/styles/",
 	);
