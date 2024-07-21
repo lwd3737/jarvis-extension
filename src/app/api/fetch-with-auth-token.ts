@@ -9,7 +9,8 @@ export const fetchWithAuthToken = async (
 	const storageService = getStorageService();
 
 	const accessToken = (await storageService.get("accessToken")) as string;
-	if (!accessToken) throw new Error("Access token is not found from storage");
+	if (!accessToken)
+		throw new UnauthorizedException("Access token is not found from storage");
 
 	const res = await baseFetch(input, {
 		...init,

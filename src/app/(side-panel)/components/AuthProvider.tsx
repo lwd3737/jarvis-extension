@@ -18,20 +18,25 @@ export default function AuthProvider({
 	const router = useRouter();
 	const storage = useStorage();
 
-	const [loading, setLoading] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [isLogined, setIsLogined] = useState<boolean>(false);
 
 	useEffect(
 		function onAuthenticate() {
-			storage?.get<string>("accessToken").then((accessToken) => {
-				if (!accessToken) {
-					setIsLogined(false);
-				} else {
-					setIsLogined(true);
-				}
+			setLoading(true);
 
-				setLoading(false);
-			});
+			storage
+				?.get<string>("accessToken")
+				.then((accessToken) => {
+					if (!accessToken) {
+						setIsLogined(false);
+					} else {
+						setIsLogined(true);
+					}
+				})
+				.then(() => {
+					setLoading(false);
+				});
 		},
 		[router, storage],
 	);
