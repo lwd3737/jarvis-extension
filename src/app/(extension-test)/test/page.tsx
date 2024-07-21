@@ -17,7 +17,7 @@ export default function TestPage() {
 	return (
 		<div>
 			<h1 className="p-10 text-lg font-bold text-center">Test Page</h1>
-			<LoadingSpinner width={100} height={100} />
+			<LoadingSpinner />
 		</div>
 	);
 }
