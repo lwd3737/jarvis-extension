@@ -18,7 +18,7 @@ export default function SidePanelPage() {
 
 	return (
 		<div className="flex items-center justify-center h-full">
-			<LoadingSpinner width={150} height={150} />
+			<LoadingSpinner />
 		</div>
 	);
 }

@@ -1,9 +1,6 @@
 import { useRef } from "react";
 
-interface LoadingSpinnerProps {
-	width: number | string;
-	height: number | string;
-}
+interface LoadingSpinnerProps {}
 
 export default function LoadingSpinner(props: LoadingSpinnerProps) {
 	const ref = useRef<HTMLSpanElement>(null);
