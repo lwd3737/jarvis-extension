@@ -8,7 +8,6 @@ export async function bind() {
 	const container = new DIContainer();
 
 	container.bind(ConfigService, {
-		baseUrl: `${process.env.NEXT_PUBLIC_PROTOCOL}://${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_PORT}`,
 		backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
 	});
 

@@ -29,6 +29,6 @@ export class ConfigService<T extends Config> implements IService {
 	}
 
 	public get(): T {
-		return this.config;
+		return deepFreeze(this.config) as T;
 	}
 }

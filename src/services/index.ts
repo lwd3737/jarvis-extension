@@ -4,4 +4,4 @@ export * from "./config.service";
 export * from "./di-container";
 export * from "./helpers";
 
-export type Config = { baseUrl: string; backendUrl: string };
+export type Config = { backendUrl: string };

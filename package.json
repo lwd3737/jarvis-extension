@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
+		"dev:production": "NODE_ENV=production next dev",
 		"build": "next build --debug && node ./build && vite build ",
 		"start": "next start",
 		"lint": "next lint",
@@ -28,6 +29,7 @@
 		"@types/react-dom": "^18",
 		"autoprefixer": "^10.0.1",
 		"chrome-types": "^0.1.246",
+		"dotenv": "^16.4.5",
 		"eslint": "^8",
 		"eslint-config-next": "14.0.3",
 		"jsdom": "^23.0.1",
