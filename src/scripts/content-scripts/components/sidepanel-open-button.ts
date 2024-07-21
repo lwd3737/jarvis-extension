@@ -9,7 +9,7 @@ export default class SidePanelOpenButton extends Component<HTMLButtonElement> {
 	constructor() {
 		super(`
     <button id="sidepanel-open-btn">
-			<img src="${logo.src}" alt="logo" width="25" height="25" />
+			<img alt="logo" width="25" height="25" />
 		</button>
   `);
 
@@ -67,6 +67,14 @@ export default class SidePanelOpenButton extends Component<HTMLButtonElement> {
 
 	protected componentDidMount(): void {
 		this.el.style.top = window.innerHeight / 2 + "px";
+
+		const imgEl = this.el.firstElementChild as HTMLImageElement;
+		if (chrome.runtime) {
+			const logoUrl = chrome.runtime.getURL("images/logo.png");
+			imgEl.src = logoUrl;
+		} else {
+			imgEl.src = logo.src;
+		}
 
 		this.el.addEventListener("click", this.onClick);
 		this.el.addEventListener("mousedown", this.onDragStart);

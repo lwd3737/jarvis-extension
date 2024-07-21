@@ -3,6 +3,14 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+	resolve: {
+		alias: [
+			{
+				find: "@",
+				replacement: __dirname,
+			},
+		],
+	},
 	build: {
 		rollupOptions: {
 			input: {
