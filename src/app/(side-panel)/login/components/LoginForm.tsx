@@ -63,6 +63,7 @@ export default function LoginForm() {
 					name="password"
 					value={password}
 					placeholder="비밀번호"
+					autoComplete="current-password"
 					onChange={handlePassword}
 				/>
 			</div>

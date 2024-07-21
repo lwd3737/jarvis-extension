@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import logoImg from "/public/images/logo.png";
-import { use } from "react";
 import useAuth from "@/src/hooks/useAuth";
 
 type HeaderProps = {
@@ -20,7 +19,7 @@ export default function Header(props: HeaderProps) {
 			</h1>
 			{auth?.isLogined && (
 				<button
-					className="absolute text-sm text-orange-500 right-5"
+					className="absolute text-sm text-gray-500 right-5"
 					onClick={() => auth?.logout()}
 				>
 					Logout

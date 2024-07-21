@@ -1,5 +1,6 @@
 import { CONTENT_ACTIONS, createAction } from "../actions";
 import Component from "./component";
+import logo from "@/public/images/logo.png";
 
 export default class SidePanelOpenButton extends Component<HTMLButtonElement> {
 	private shiftY: number | null = null;
@@ -8,7 +9,7 @@ export default class SidePanelOpenButton extends Component<HTMLButtonElement> {
 	constructor() {
 		super(`
     <button id="sidepanel-open-btn">
-			Jarvis
+			<img src="${logo.src}" alt="logo" width="25" height="25" />
 		</button>
   `);
 
@@ -26,7 +27,7 @@ export default class SidePanelOpenButton extends Component<HTMLButtonElement> {
 	private onDragStart(ev: MouseEvent) {
 		ev.preventDefault();
 
-		const el = (this.el = ev.target as HTMLButtonElement);
+		const el = (this.el = ev.currentTarget as HTMLButtonElement);
 
 		this.shiftY = ev.clientY - el.getBoundingClientRect().top;
 
