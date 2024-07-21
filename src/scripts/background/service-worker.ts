@@ -1,4 +1,4 @@
-import { CONTENT_ACTIONS } from "./common/actions";
+import { CONTENT_ACTIONS } from "../common/actions";
 
 console.info("service worker loaded");
 

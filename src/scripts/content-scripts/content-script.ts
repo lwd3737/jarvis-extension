@@ -1,4 +1,4 @@
-import render from "./content-scripts/render";
+import render from "./render";
 
 async function main() {
 	await render();

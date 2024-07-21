@@ -7,8 +7,14 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				// TODO: popup 추가
-				"content-script": resolve(__dirname, "src/scripts/content-script.ts"),
-				"service-worker": resolve(__dirname, "src/scripts/service-worker.ts"),
+				"content-script": resolve(
+					__dirname,
+					"src/scripts/content-scripts/content-script.ts",
+				),
+				"service-worker": resolve(
+					__dirname,
+					"src/scripts/background/service-worker.ts",
+				),
 			},
 			output: {
 				dir: "extension/scripts",
