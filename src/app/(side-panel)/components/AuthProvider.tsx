@@ -57,7 +57,7 @@ export default function AuthProvider({
 			if (!isLogined) {
 				router.replace("/login");
 			} else {
-				router.replace("/chat");
+				router.replace("/");
 			}
 		},
 		[isLogined, loading, router],
