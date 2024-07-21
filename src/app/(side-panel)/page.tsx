@@ -12,7 +12,7 @@ export default function SidePanelPage() {
 	useEffect(() => {
 		if (!auth) return;
 		if (!auth.loading && auth.isLogined) {
-			// router.replace("/chat");
+			router.replace("/chat");
 		}
 	}, [auth, router]);
 
