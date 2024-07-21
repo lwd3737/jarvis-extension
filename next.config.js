@@ -15,12 +15,8 @@ const ifDev = (on) => {
 };
 
 const nextConfig = () => {
-	const envFilePath = path.resolve(__dirname, `.env.${process.env.NODE_ENV}`);
-	const env = dotenv.config({ path: envFilePath }).parsed;
-
-	return {
+	const config = {
 		output: "export",
-		env,
 		images: {
 			unoptimized: true,
 		},
@@ -37,6 +33,16 @@ const nextConfig = () => {
 			instrumentationHook: true,
 		},
 	};
+
+	const envFile = process.env.ENV_FILE;
+	if (envFile) {
+		const envFilePath = path.resolve(__dirname, envFile);
+		const env = dotenv.config({ path: envFilePath }).parsed;
+
+		config.env = env;
+	}
+
+	return config;
 };
 
 module.exports = nextConfig;

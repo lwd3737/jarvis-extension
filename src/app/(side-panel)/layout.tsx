@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import ContainerProvider from "./components/ContainerProvider";
 import AuthProvider from "./components/AuthProvider";
 import Header from "./components/Header";
-import "./side-panel.css";
+import "../global.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,8 +17,8 @@ export default function SidePannelLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en">
-			<body className={inter.className}>
+		<html className="h-full" lang="en">
+			<body className={`h-full ${inter.className}`}>
 				<ContainerProvider>
 					<AuthProvider>
 						<Header height="10%" />

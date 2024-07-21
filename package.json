@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"dev:production": "NODE_ENV=production next dev",
+		"dev:production": "export ENV_FILE=.env.production && next dev",
 		"build": "next build --debug && node ./build && vite build ",
 		"start": "next start",
 		"lint": "next lint",
