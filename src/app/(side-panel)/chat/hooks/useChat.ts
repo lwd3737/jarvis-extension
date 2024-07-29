@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from "react";
-import { sendPrompt } from "../../../api/chat/fetch";
 import {
 	CoreAssistantMessage,
 	CoreMessage,
@@ -12,6 +11,7 @@ import useConfig from "../../../../hooks/useConfig";
 import useStorage from "../../../../hooks/useStorage";
 import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/src/hooks/useAuthGuard";
+import { chatApi } from "@/src/app/api/chat/fetch";
 
 export default function useChat() {
 	const router = useRouter();
@@ -25,83 +25,67 @@ export default function useChat() {
 
 	const eventSourceRef = useRef<EventSource | null>(null);
 
-	const handleStream = useCallback(async () => {
-		const accessToken = await storage?.get("accessToken");
-		if (!accessToken) {
-			router.replace("/login");
-			return;
-		}
+	const onReplyStreamCompleted = useCallback(() => {
+		setLoading(false);
 
+		const source = eventSourceRef.current;
+		source?.close();
+		eventSourceRef.current = null;
+	}, []);
+
+	const processReplyStream = useCallback(async () => {
 		const eventSource = (eventSourceRef.current = new EventSource(
-			// TODO: 보안 이슈로 인해 accessToken을 query string으로 전달하는 것은 좋지 않으므로 수정이 필요
-			`${config!.backendUrl}/api/chat/stream?accessToken=${accessToken}`,
+			`${config!.backendUrl}/api/chat/reply`,
 		));
 
-		eventSource.onopen = () => {
-			// TODO: access token을 전송해서 인증. 실패하면 연결 종룧하고 로그인 페이지로 이동
-		};
-
-		eventSource.onerror = (event) => {
-			console.error(event);
-			eventSource.close();
-		};
-
 		let started = false;
+
 		const listener = (event: MessageEvent) => {
-			const data = JSON.parse(event.data) as TextStreamPart<
-				Record<string, CoreTool<any, any>>
-			>;
+			const content = event.data as string;
 
-			switch (data.type) {
-				case "text-delta":
-					if (!started) {
-						started = true;
+			if (started) {
+				setMessages((prev) => {
+					return prev.map((message, idx, origin) => {
+						const isStreaming = idx === origin.length - 1;
+						if (!isStreaming) return message;
 
-						const newMessage = {
-							role: "assistant",
-							content: data.textDelta,
+						const streamingMessage = {
+							...message,
+							content: (message.content as string) + content,
 						} as CoreAssistantMessage;
 
-						setMessages((prev) => [...prev, newMessage]);
-					} else {
-						setMessages((prev) => {
-							const streamingMessage = prev[prev.length - 1];
-							const updatedMessage = {
-								...streamingMessage,
-								content: streamingMessage.content + data.textDelta,
-							} as CoreAssistantMessage;
+						return streamingMessage;
+					});
+				});
+			} else {
+				started = true;
 
-							return [...prev.slice(0, -1), updatedMessage];
-						});
-					}
-					break;
-				case "finish":
-					setLoading(false);
-					started = false;
-					eventSource.close();
-					eventSource.removeEventListener(CHAT_EVENT.stream, listener);
-					break;
-				case "error":
-					console.error(data.error);
-					break;
-				case "tool-call":
-					break;
+				const newMessage = {
+					role: "assistant",
+					content,
+				} as CoreAssistantMessage;
+
+				setMessages((prev) => [...prev, newMessage]);
 			}
 		};
 
 		eventSource.addEventListener(CHAT_EVENT.stream, listener);
+		eventSource.addEventListener(CHAT_EVENT.finish, () => {
+			onReplyStreamCompleted();
+		});
 
-		eventSource.onerror = (e) => {
+		eventSource.addEventListener("error", (e) => {
 			console.error(e);
-			eventSource.removeEventListener(CHAT_EVENT.stream, listener);
-			eventSource.close();
-		};
-	}, [config, storage, router]);
 
-	const append = useCallback(
+			onReplyStreamCompleted();
+		});
+	}, [config, onReplyStreamCompleted]);
+
+	const chat = useCallback(
 		async (content: string) => {
 			if (loading) return;
-			else setLoading(true);
+
+			setLoading(true);
 
 			const prompt = {
 				role: "user",
@@ -109,20 +93,19 @@ export default function useChat() {
 			} as CoreUserMessage;
 
 			setMessages((prev) => [...prev, prompt]);
-			handleStream();
 
 			await guard(async () => {
-				await sendPrompt(prompt);
+				await chatApi.prompt(prompt);
+				await processReplyStream();
 			});
 		},
-		[guard, handleStream, loading],
+		[guard, processReplyStream, loading],
 	);
 
 	const stop = useCallback(() => {
-		if (!eventSourceRef.current) return;
-		eventSourceRef.current.close();
+		eventSourceRef.current?.close();
 		setLoading(false);
 	}, []);
 
-	return { messages, loading, append, stop };
+	return { messages, loading, append: chat, stop };
 }
