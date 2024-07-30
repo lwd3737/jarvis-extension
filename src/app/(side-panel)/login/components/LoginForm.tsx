@@ -32,10 +32,15 @@ export default function LoginForm() {
 		async (e) => {
 			e.preventDefault();
 
-			const { accessToken } = await login({ email, password });
+			try {
+				const { accessToken } = await login({ email, password });
+				storageService?.set("accessToken", accessToken);
+				auth?.login();
+			} catch (err) {
+				console.error(err);
 
-			storageService?.set("accessToken", accessToken);
-			auth?.login();
+				alert("Login failed");
+			}
 		},
 		[auth, email, password, storageService],
 	);
