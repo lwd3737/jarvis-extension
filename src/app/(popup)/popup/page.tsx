@@ -1,11 +1,22 @@
 "use client";
-
 import { useState } from "react";
 
-export default function PopupPage() {
-	const [on, setOn] = useState<boolean>(true);
+const STORAGE_KEY = "isJarvisOn";
 
-	const handleToggle = () => (on ? setOn(false) : setOn(true));
+const isJarvisOn = () => localStorage.getItem(STORAGE_KEY) === "true";
+
+export default function PopupPage() {
+	const [on, setOn] = useState<boolean>(isJarvisOn());
+
+	const handleToggle = () => {
+		if (on) {
+			setOn(false);
+			localStorage.setItem(STORAGE_KEY, "false");
+		} else {
+			setOn(true);
+			localStorage.setItem(STORAGE_KEY, "true");
+		}
+	};
 
 	const renderState = () => {
 		return (
