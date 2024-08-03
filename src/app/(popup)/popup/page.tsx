@@ -1,63 +1,14 @@
-"use client";
-import { useState } from "react";
+import dynamic from "next/dynamic";
 
-const STORAGE_KEY = "isJarvisOn";
-
-const isJarvisOn = () => localStorage.getItem(STORAGE_KEY) === "true";
+const OnOffSwitchButton = dynamic(
+	() => import("./components/OnOffSwitchButton"),
+	{ ssr: false },
+);
 
 export default function PopupPage() {
-	const [on, setOn] = useState<boolean>(isJarvisOn());
-
-	const handleToggle = () => {
-		if (on) {
-			setOn(false);
-			localStorage.setItem(STORAGE_KEY, "false");
-		} else {
-			setOn(true);
-			localStorage.setItem(STORAGE_KEY, "true");
-		}
-	};
-
-	const renderState = () => {
-		return (
-			<span
-				className={`absolute pt-[3px] ${
-					on ? "left-[7px]" : "right-[5px]"
-				}  font-bold text-[11px] text-white`}
-			>
-				{on ? "ON" : "OFF"}
-			</span>
-		);
-	};
-
 	return (
 		<div className="flex justify-center items-center p-4">
-			<button
-				className={`relative flex items-center ${
-					on ? "bg-green-300" : "bg-gray-200"
-				}  px-1 border-non rounded-2xl w-[50px] h-[25px] transition-[background-color] duration-300`}
-				onClick={handleToggle}
-			>
-				{renderState()}
-				<span
-					className={`absolute inline-block bg-white rounded-full w-[19px] h-[19px] transition-[left] duration-300`}
-					style={{
-						left: on
-							? styles.container.width - styles.thumb.size - 2 + "px"
-							: styles.container.padding + "px",
-					}}
-				></span>
-			</button>
+			<OnOffSwitchButton />
 		</div>
 	);
 }
-
-const styles = {
-	container: {
-		width: 50,
-		padding: 3,
-	},
-	thumb: {
-		size: 19,
-	},
-};

@@ -8,7 +8,7 @@ export default class StorageService implements IService, IStorageService {
 	private storage: LocalStorageService | ChromeStorageService;
 
 	constructor() {
-		if (chrome.storage) {
+		if (chrome?.storage) {
 			this.storage = new ChromeStorageService();
 		} else {
 			this.storage = new LocalStorageService();
