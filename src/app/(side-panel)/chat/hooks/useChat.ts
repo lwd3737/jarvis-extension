@@ -2,22 +2,16 @@ import { useCallback, useRef, useState } from "react";
 import {
 	CoreAssistantMessage,
 	CoreMessage,
-	CoreTool,
 	CoreUserMessage,
-	TextStreamPart,
+	FinishReason,
 } from "ai";
 import { CHAT_EVENT } from "@/constants/events";
 import useConfig from "../../../../hooks/useConfig";
-import useStorage from "../../../../hooks/useStorage";
-import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/src/hooks/useAuthGuard";
 import { chatApi } from "@/src/app/api/chat/fetch";
 
 export default function useChat() {
-	const router = useRouter();
-
 	const config = useConfig();
-	const storage = useStorage();
 	const guard = useAuthGuard();
 
 	const [messages, setMessages] = useState<CoreMessage[]>([]);
@@ -25,7 +19,42 @@ export default function useChat() {
 
 	const eventSourceRef = useRef<EventSource | null>(null);
 
-	const onReplyStreamCompleted = useCallback(() => {
+	const isStreamingStartedRef = useRef<boolean>(false);
+
+	const handleTextChunk = useCallback((event: MessageEvent) => {
+		const isStarted = isStreamingStartedRef.current;
+		const chunk = event.data as string;
+
+		if (!isStarted) {
+			isStreamingStartedRef.current = true;
+
+			setMessages((prev) => {
+				const newMessage = {
+					role: "assistant",
+					content: chunk,
+				} as CoreAssistantMessage;
+
+				return [...prev, newMessage];
+			});
+		} else {
+			setMessages((prev) =>
+				prev.map((preMessage, idx, origin) => {
+					const isStreaming = idx === origin.length - 1;
+					if (!isStreaming) return preMessage;
+
+					const streamingMessage = {
+						role: "assistant",
+						content: preMessage.content + chunk,
+					} as CoreAssistantMessage;
+
+					return streamingMessage;
+				}),
+			);
+		}
+	}, []);
+
+	const onReplyFinished = useCallback(() => {
+		isStreamingStartedRef.current = false;
 		setLoading(false);
 
 		const source = eventSourceRef.current;
@@ -33,53 +62,42 @@ export default function useChat() {
 		eventSourceRef.current = null;
 	}, []);
 
-	const processReplyStream = useCallback(async () => {
-		const eventSource = (eventSourceRef.current = new EventSource(
-			`${config!.backendUrl}/api/chat/reply`,
-		));
-
-		let started = false;
-
-		const listener = (event: MessageEvent) => {
-			const content = event.data as string;
-
-			if (started) {
-				setMessages((prev) => {
-					return prev.map((message, idx, origin) => {
-						const isStreaming = idx === origin.length - 1;
-						if (!isStreaming) return message;
-
-						const streamingMessage = {
-							...message,
-							content: (message.content as string) + content,
-						} as CoreAssistantMessage;
-
-						return streamingMessage;
-					});
-				});
-			} else {
-				started = true;
-
-				const newMessage = {
-					role: "assistant",
-					content,
-				} as CoreAssistantMessage;
-
-				setMessages((prev) => [...prev, newMessage]);
-			}
+	const handleFinish = useCallback((event: MessageEvent) => {
+		const { reason } = JSON.parse(event.data) as {
+			reason: FinishReason | "completed";
 		};
+		switch (reason) {
+			case "completed":
+			case "stop":
+			case "content-filter":
+			case "tool-calls":
+			case "other":
+			case "length":
+			case "unknown":
+		}
 
-		eventSource.addEventListener(CHAT_EVENT.stream, listener);
-		eventSource.addEventListener(CHAT_EVENT.finish, () => {
-			onReplyStreamCompleted();
-		});
+		onReplyFinished();
+	}, []);
 
-		eventSource.addEventListener("error", (e) => {
+	const handleError = useCallback((event: MessageEvent) => {
+		console.error(event);
+
+		onReplyFinished;
+	}, []);
+
+	const setUpReplyStream = useCallback(async () => {
+		try {
+			const eventSource = (eventSourceRef.current = new EventSource(
+				`${config!.backendUrl}/api/chat/reply`,
+			));
+			// TODO: 공통 데이터 타입 공통 모듈에 정의
+			eventSource.addEventListener(CHAT_EVENT.textChunk, handleTextChunk);
+			eventSource.addEventListener(CHAT_EVENT.finish, handleFinish);
+			eventSource.addEventListener(CHAT_EVENT.error, handleError);
+		} catch (e) {
 			console.error(e);
-
-			onReplyStreamCompleted();
-		});
-	}, [config, onReplyStreamCompleted]);
+		}
+	}, [config, onReplyFinished]);
 
 	const chat = useCallback(
 		async (content: string) => {
@@ -96,10 +114,10 @@ export default function useChat() {
 
 			await guard(async () => {
 				await chatApi.prompt(prompt);
-				await processReplyStream();
+				await setUpReplyStream();
 			});
 		},
-		[guard, processReplyStream, loading],
+		[guard, setUpReplyStream, loading],
 	);
 
 	const stop = useCallback(() => {
