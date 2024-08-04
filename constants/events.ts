@@ -1,4 +1,5 @@
 export const CHAT_EVENT = {
-	stream: "chat.stream",
+	textChunk: "chat.textChunk",
 	finish: "chat.finish",
-};
+	error: "chat.error",
+} as const;
